@@ -31,7 +31,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/dodo-iptv`,
+      url: `${baseUrl}/zyminex`,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.95,
