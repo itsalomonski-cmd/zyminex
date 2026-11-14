@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
 import { Send, X } from 'lucide-react';
 import { CONSTANTS } from '@/lib/seo';
 
@@ -107,7 +106,7 @@ export default function FloatingWhatsApp() {
 
   const SupportProfilePic = () => (
     <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden flex-shrink-0 border-2 border-white/20">
-      <Image
+      <img
         src="/img/profile.webp"
         alt={`${CONSTANTS.BRAND_NAME} Customer Service Representative`}
         width={40}
@@ -188,7 +187,7 @@ export default function FloatingWhatsApp() {
                 {msg.sender === 'support' && (
                   <div className="flex-shrink-0 mr-2 self-end">
                     <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-white shadow-sm">
-                      <Image
+                      <img
                         src="/img/profile.webp"
                         alt="Support Team"
                         width={28}

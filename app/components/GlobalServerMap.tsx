@@ -3,7 +3,6 @@
 import { FadeIn } from './AnimatedSection';
 import { Wifi, Server, ShieldCheck, Zap } from 'lucide-react';
 import { CONSTANTS } from '@/lib/seo';
-import Image from 'next/image';
 
 export default function GlobalServerMap() {
   return (
@@ -44,7 +43,7 @@ export default function GlobalServerMap() {
 
         {/* Medium-Sized Map Graphic */}
         <div className="relative mx-auto my-8 max-w-5xl px-4">
-          <Image
+          <img
             src="/img/global.png"
             alt={`Global IPTV server network coverage map for ${CONSTANTS.BRAND_NAME}`}
             width={1400}

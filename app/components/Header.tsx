@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
@@ -71,13 +70,14 @@ export default function Header() {
             <div className="flex items-center">
               <Link href="/" className="flex items-center group cursor-pointer" aria-label={`${CONSTANTS.BRAND_NAME} Home`}>
                 <div className="h-10 flex items-center group-hover:scale-105 transition-transform duration-200">
-                  <Image
+                  <img
                     src="/img/zyminex-logo.png"
                     alt={`${CONSTANTS.BRAND_NAME} - Premium IPTV Provider Logo`}
                     width={160}
                     height={40}
                     className="object-contain h-full w-full"
-                    priority
+                    fetchPriority="high"
+                    loading="eager"
                   />
                 </div>
               </Link>

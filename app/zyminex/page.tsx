@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { CONSTANTS } from '@/lib/seo';
 import {
@@ -120,15 +119,12 @@ export default function HomePage() {
       {/* HERO */}
       <section className="relative px-15 py-24 md:py-40 overflow-hidden flex flex-col items-center justify-center text-center min-h-screen w-full bg-[#09090B]">
         <div className="absolute inset-0 z-0">
-          <Image
+          <img
             src="/img/background.webp"
             alt={`${BRAND} streaming in 4K ultra HD quality`}
-            fill
-            priority
             fetchPriority="high"
-            className="object-cover object-center brightness-[0.22]"
-            sizes="100vw"
-            quality={85}
+            loading="eager"
+            className="absolute inset-0 w-full h-full object-cover object-center brightness-[0.22]"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#09090B]/80 via-[#09090B]/60 to-[#09090B]/90" />
         </div>
@@ -361,7 +357,7 @@ export default function HomePage() {
 
         <div className="w-full bg-black/40 py-10 flex justify-center items-center transition-all duration-300">
           <div className="w-full max-w-[1100px] px-6 h-auto aspect-[5/2] flex justify-center items-center">
-            <Image
+            <img
               src="/img/sofa.webp"
               alt={`${BRAND} streaming on a Smart TV in a living room`}
               width={1200}

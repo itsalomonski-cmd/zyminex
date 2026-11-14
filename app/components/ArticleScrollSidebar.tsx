@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   ArrowRight,
   Calendar,
@@ -248,7 +247,7 @@ export default function ArticleScrollSidebar({
                     className="group block bg-[#09090B] rounded-2xl overflow-hidden border-2 border-[#27272A] hover:border-[#39FF14] hover:shadow-[0_15px_35px_rgba(57,255,20,0.15)] hover:-translate-y-1 transition-all duration-500 cursor-pointer"
                   >
                     <div className="relative aspect-[16/10] overflow-hidden bg-[#09090B]">
-                      <Image
+                      <img
                         src={relPost.image}
                         alt={relPost.title}
                         width={400}

@@ -8,6 +8,16 @@ import { CONSTANTS } from '@/lib/seo';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import Loading from './components/loading';
 
+
+// ---------------------------------------------------------------------------
+// GLOBAL CACHING — applies to every page in the app
+// 86400 seconds = 24 hours
+// Any page can override this by declaring its own `revalidate` export.
+// ---------------------------------------------------------------------------
+export const revalidate = 86400;
+
+
+
 const poppins = Poppins({
   weight: ['300', '400', '500', '600', '700'],
   subsets: ['latin'],
@@ -293,7 +303,7 @@ export default function RootLayout({
         <main className="relative z-10">{children}</main>
         <Footer />
 
-        <GoogleAnalytics gaId="G-WF2QTPGT4L" />
+        <GoogleAnalytics gaId="G-B9EMDZMPBF" />
         <FloatingWhatsApp />
       </body>
     </html>

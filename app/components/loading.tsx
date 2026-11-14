@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
-import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 function LoaderContent() {
@@ -114,12 +113,13 @@ function LoaderContent() {
 
       {/* Hero Image */}
       <div className="relative z-10 w-[220px] sm:w-[280px] md:w-[340px] animate-[loaderFloat_2.4s_ease-in-out_infinite]">
-        <Image
+        <img
           src="/img/hero.png"
           alt="Zyminex loading"
           width={400}
           height={400}
-          priority
+          fetchPriority="high"
+          loading="eager"
           className="w-full h-auto object-contain"
         />
       </div>

@@ -1,7 +1,6 @@
 'use client';
 
 import Link from "next/link";
-import Image from "next/image";
 import { CONSTANTS } from "@/lib/seo";
 import { channelsData } from "@/lib/channels-data";
 import { Facebook, Instagram, Twitter } from "lucide-react";
@@ -125,7 +124,7 @@ export default function Footer() {
                 aria-label={`${CONSTANTS.FOCUS_KEYWORD} - Home`}
               >
                 <div className="w-auto h-12 flex items-center group-hover:scale-105 transition-transform duration-200">
-                  <Image
+                  <img
                     src="/img/zyminex-logo.png"
                     alt={`${CONSTANTS.FOCUS_KEYWORD} Logo`}
                     width={180}
@@ -278,7 +277,7 @@ export default function Footer() {
                 className="relative h-10 w-16 shrink-0 rounded-lg border border-[#27272A] bg-[#18181B] p-1 shadow-sm hover:scale-105 hover:border-[#39FF14] transition-all duration-200"
                 title={item.name}
               >
-                <Image
+                <img
                   src={item.icon}
                   alt={item.name}
                   fill

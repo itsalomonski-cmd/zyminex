@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import PricingSection from '../components/PricingSection';
 import ShareButtons from '../components/ShareButtons';
@@ -89,15 +88,12 @@ export default function PricingPage() {
       ========================================================== */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <Image
+          <img
             src="/img/bg-2.webp"
             alt={`${CONSTANTS.BRAND_NAME} IPTV Subscription plans and pricing`}
-            width={1920}
-            height={1080}
-            priority
-            className="w-full h-full object-cover brightness-[0.2]"
-            sizes="100vw"
-            quality={85}
+            fetchPriority="high"
+            loading="eager"
+            className="absolute inset-0 w-full h-full object-cover brightness-[0.2]"
           />
           <div className="absolute inset-0 bg-[#09090B]/40" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-transparent to-[#09090B]/0" />

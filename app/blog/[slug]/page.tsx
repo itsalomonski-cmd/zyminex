@@ -3,7 +3,6 @@ import { blogPosts } from '@/lib/blog';
 import { CONSTANTS } from '@/lib/seo';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   ArrowLeft,
   Calendar,
@@ -446,18 +445,16 @@ export default async function BlogPostPage({ params }: Props) {
       ========================================================== */}
       <section className="relative min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden bg-[#09090B] border-b border-[#27272A]">
 
-        <div className="absolute inset-0 z-0">
-          <Image
-            src={imageSrc}
-            alt={post.title}
-            fill
-            priority
-            fetchPriority="high"
-            className="object-cover object-center"
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#09090B]/90 via-[#09090B]/80 to-[#09090B]/95" />
-        </div>
+          <div className="absolute inset-0 z-0">
+            <img
+              src={imageSrc}
+              alt={post.title}
+              fetchPriority="high"
+              loading="eager"
+              className="absolute inset-0 w-full h-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#09090B]/90 via-[#09090B]/80 to-[#09090B]/95" />
+          </div>
 
         <div
           className="absolute inset-0 z-0 opacity-10 pointer-events-none"
@@ -494,12 +491,10 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-4">
             <div className="inline-flex items-center gap-3 bg-[#18181B]/90 backdrop-blur-md border border-[#27272A] pl-1.5 pr-4 py-1.5 rounded-full shadow-md">
               <div className="relative w-8 h-8 rounded-full overflow-hidden border border-[#39FF14]">
-                <Image
+                <img
                   src="/img/profile.webp"
                   alt={post.author}
-                  fill
-                  className="object-cover"
-                  sizes="32px"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
               <div className="text-left">
@@ -630,12 +625,10 @@ export default async function BlogPostPage({ params }: Props) {
 
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6 relative z-10">
                 <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-[#39FF14] shadow-xl flex-shrink-0 rotate-2 hover:rotate-0 transition-transform">
-                  <Image
+                  <img
                     src="/img/profile.webp"
                     alt={`${post.author} - ${FOCUS_KEYWORD} Specialist`}
-                    fill
-                    className="object-cover"
-                    sizes="96px"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                 </div>
 

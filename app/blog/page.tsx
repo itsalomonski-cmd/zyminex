@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
 import { blogPosts } from '@/lib/blog';
 import { CONSTANTS } from '@/lib/seo';
 import {
@@ -278,14 +277,13 @@ function BlogCard({ post, priority = false }: { post: any; priority?: boolean })
       className="group relative flex flex-col bg-[#18181B] rounded-3xl overflow-hidden border border-[#27272A] hover:border-[#39FF14] hover:shadow-[0_20px_50px_rgba(57,255,20,0.15)] hover:-translate-y-2 transition-all duration-500 cursor-pointer"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-[#09090B]">
-        <Image
+        <img
           src={post.image}
           alt={`${post.title} - ${BRAND} blog`}
           width={800}
           height={500}
-          priority={priority}
+          fetchPriority={priority ? 'high' : 'auto'}
           loading={priority ? 'eager' : 'lazy'}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-[#09090B]/20 to-transparent opacity-70 group-hover:opacity-50 transition-opacity duration-500" />
@@ -349,14 +347,13 @@ function FeaturedCard({ post }: { post: any }) {
       className="group relative grid grid-cols-1 lg:grid-cols-2 gap-0 bg-[#18181B] rounded-[2rem] overflow-hidden border border-[#27272A] hover:border-[#39FF14] hover:shadow-[0_25px_60px_rgba(57,255,20,0.15)] transition-all duration-500 cursor-pointer"
     >
       <div className="relative aspect-[16/10] lg:aspect-auto lg:min-h-[420px] overflow-hidden bg-[#09090B]">
-        <Image
+        <img
           src={post.image}
           alt={`${post.title} - Featured ${BRAND} article`}
           width={900}
           height={600}
-          priority
+          fetchPriority="high"
           loading="eager"
-          sizes="(max-width: 1024px) 100vw, 50vw"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
         />
         <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-[#09090B]/80 via-transparent to-transparent" />

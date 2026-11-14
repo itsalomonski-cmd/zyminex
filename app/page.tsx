@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { CONSTANTS } from '@/lib/seo';
 import { ProductSchema, FAQSchema } from './components/PageSchemas';
@@ -107,15 +106,12 @@ export default function Home() {
       <section className="relative px-4 pt-36 pb-12 md:pt-24 md:pb-16 lg:pt-38 lg:pb-20 overflow-hidden flex flex-col items-center justify-center min-h-[85vh] lg:min-h-[90vh] w-full bg-[#081425]">
         {/* ---------- HERO BACKGROUND PHOTO (full bleed) ---------- */}
         <div className="absolute inset-0 z-0">
-          <Image
+          <img
             src="/img/background.webp"
             alt=""
-            fill
-            priority
             fetchPriority="high"
-            className="object-cover object-center brightness-[0.28]"
-            sizes="100vw"
-            quality={85}
+            loading="eager"
+            className="absolute inset-0 w-full h-full object-cover object-center brightness-[0.28]"
             aria-hidden="true"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#081425]/10 via-[#0B1F35]/40 to-[#081425]/85" />
@@ -134,13 +130,12 @@ export default function Home() {
 
         {/* ---------- NEW NEON EFFECT IMAGE (hidden on mobile, visible on desktop) ---------- */}
         <div className="hidden lg:block absolute bottom-0 right-0 w-[80%] h-[90%] z-[2] pointer-events-none">
-          <Image
+          <img
             src="/img/neon.png"
             alt=""
-            fill
-            priority
-            className="object-cover object-bottom-right opacity-80"
-            sizes="80vw"
+            fetchPriority="high"
+            loading="eager"
+            className="absolute inset-0 w-full h-full object-cover object-bottom-right opacity-80"
             aria-hidden="true"
           />
         </div>
@@ -206,15 +201,12 @@ export default function Home() {
             </div>
             {/* Changed aspect to 4/3 and scaled up to fill the vertical space */}
             <div className="relative w-full aspect-[4/3] lg:aspect-[5/4]">
-              <Image
+              <img
                 src="/img/hero.png"
                 alt="Zyminex streaming live US TV channels in 4K Ultra HD quality"
-                fill
-                priority
                 fetchPriority="high"
-                className="object-contain scale-110"
-                sizes="(max-width: 1024px) 0vw, 50vw"
-                quality={92}
+                loading="eager"
+                className="absolute inset-0 w-full h-full object-contain scale-110"
               />
             </div>
           </div>
@@ -528,7 +520,7 @@ export default function Home() {
 
         <div className="w-full bg-[#081425] py-10 flex justify-center items-center transition-all duration-300">
           <div className="w-full max-w-[1100px] px-6 h-auto aspect-[5/2] flex justify-center items-center">
-            <Image
+            <img
               src="/img/sofa.webp"
               alt="Zyminex playing on a Smart TV in a modern US living room"
               width={1200}
@@ -1021,7 +1013,7 @@ export default function Home() {
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div className="relative order-1 overflow-hidden rounded-[2.5rem] bg-[#0F2942] border-2 border-[#1E3A52] p-3 shadow-2xl transition-all duration-500 hover:border-[#39FF14]">
               <div className="relative aspect-[4/3] overflow-hidden rounded-[1.8rem] sm:aspect-video lg:aspect-[5/4]">
-                <Image
+                <img
                   src="/img/image-1.webp"
                   alt="Zyminex 4K IPTV Provider service streaming in high definition on a Smart TV"
                   width={800}
@@ -1160,7 +1152,7 @@ export default function Home() {
 
             <div className="relative order-1 overflow-hidden rounded-[2.5rem] bg-[#0F2942] border-2 border-[#1E3A52] p-3 lg:order-2 shadow-2xl transition-all duration-500 hover:border-[#39FF14]">
               <div className="relative aspect-[4/3] overflow-hidden rounded-[1.8rem] sm:aspect-video lg:aspect-[5/4]">
-                <Image
+                <img
                   src="/img/bg-1.webp"
                   alt="NFL match day streaming on a Zyminex Subscription"
                   width={800}
@@ -1415,7 +1407,7 @@ export default function Home() {
                 <div>
                   <div className="flex items-center justify-between gap-4 mb-6">
                     <div className="flex items-center gap-3">
-                      <Image
+                      <img
                         src={testimonial.avatar}
                         alt={testimonial.name}
                         width={48}
@@ -1621,7 +1613,7 @@ export default function Home() {
                   <div className="bg-[#0F2942] text-[#F8FAFC] rounded-3xl p-4 border-2 border-[#1E3A52] shadow-md hover:border-[#39FF14] hover:shadow-[0_20px_40px_rgba(57,255,20,0.15)] hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between h-full relative">
                     <div>
                       <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-[#081425]">
-                        <Image
+                        <img
                           src={post.image}
                           alt={`${post.title} Zyminex setup guide`}
                           width={800}

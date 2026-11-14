@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import { useMemo } from 'react';
 import { CONSTANTS } from '@/lib/seo';
 
@@ -104,7 +103,7 @@ export default function PartnerSlider() {
                 className="flex items-center justify-center min-w-[120px] md:min-w-[150px] opacity-90 hover:opacity-100 transition-all duration-300 grayscale hover:grayscale-0"
               >
                 <div className="relative w-20 h-20 md:w-28 md:h-28">
-                  <Image
+                  <img
                     src={partner.imagePath}
                     alt={altText}
                     width={partner.width}
@@ -152,7 +151,7 @@ export default function PartnerSlider() {
                 className="flex items-center justify-center min-w-[120px] md:min-w-[150px] transition-all duration-300 hover:scale-105"
               >
                 <div className="relative w-20 h-20 md:w-28 md:h-28 flex items-center justify-center">
-                  <Image
+                  <img
                     src={device.imagePath}
                     alt={altText}
                     width={device.width}

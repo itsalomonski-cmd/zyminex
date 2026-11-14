@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import { useState, useMemo } from 'react';
 import { CONSTANTS } from '@/lib/seo';
 
@@ -223,7 +222,7 @@ const InfiniteSlider = ({
                 style={{ borderColor: cardBorderColor }}
               >
                 {!failedImages[key] ? (
-                  <Image
+                  <img
                     src={`${item.imagePath}.webp`}
                     alt={altText}
                     width={208}
