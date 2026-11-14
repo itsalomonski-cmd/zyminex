@@ -277,14 +277,12 @@ export default function Footer() {
                 className="relative h-10 w-16 shrink-0 rounded-lg border border-[#27272A] bg-[#18181B] p-1 shadow-sm hover:scale-105 hover:border-[#39FF14] transition-all duration-200"
                 title={item.name}
               >
-                <img
-                  src={item.icon}
-                  alt={item.name}
-                  fill
-                  className="object-contain p-1 filter drop-shadow-sm opacity-95"
-                  loading="lazy"
-                  sizes="64px"
-                />
+              <img
+                src={item.icon}
+                alt={item.name}
+                className="object-contain p-1 filter drop-shadow-sm opacity-95"
+                loading="lazy"
+              />
               </div>
             ))}
           </div>
