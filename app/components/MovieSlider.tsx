@@ -228,10 +228,8 @@ const InfiniteSlider = ({
                     width={208}
                     height={312}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="eager"
-                    priority={isPriority}
-                    sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, (max-width: 1024px) 192px, 208px"
-                    onError={() =>
+                    loading={isPriority ? "eager" : "lazy"}
+                    sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, (max-width: 1024px) 192px, 208px"                    onError={() =>
                       setFailedImages((prev) => ({ ...prev, [key]: true }))
                     }
                   />
