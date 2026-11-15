@@ -1,68 +1,83 @@
 'use client';
 
 import Link from "next/link";
+import { useEffect, useId, useState } from "react";
 import { CONSTANTS } from "@/lib/seo";
 import { channelsData } from "@/lib/channels-data";
 import { Facebook, Instagram, Twitter } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Lightweight Circular Flags (US, CA, UK, AU)
+// Each flag generates a unique clipPath id per instance via useId() to avoid
+// duplicate-id hydration crashes when the footer is rendered more than once.
 // ---------------------------------------------------------------------------
-const FlagUS = () => (
-  <svg className="w-5 h-5 rounded-full shadow-md shrink-0 border border-white/20" viewBox="0 0 32 32">
-    <clipPath id="f-us"><circle cx="16" cy="16" r="16" /></clipPath>
-    <g clipPath="url(#f-us)">
-      <path fill="#FFF" d="M0 0h32v32H0z" />
-      {[0, 4.57, 9.14, 13.71, 18.29, 22.86, 27.43].map((y, i) => (
-        <path key={i} fill="#B22234" d={`M0 ${y}h32v2.29H0z`} />
-      ))}
-      <path fill="#3C3B6E" d="M0 0h13.7v14.86H0z" />
-    </g>
-  </svg>
-);
+const FlagUS = () => {
+  const id = useId();
+  return (
+    <svg className="w-5 h-5 rounded-full shadow-md shrink-0 border border-white/20" viewBox="0 0 32 32">
+      <clipPath id={id}><circle cx="16" cy="16" r="16" /></clipPath>
+      <g clipPath={`url(#${id})`}>
+        <path fill="#FFF" d="M0 0h32v32H0z" />
+        {[0, 4.57, 9.14, 13.71, 18.29, 22.86, 27.43].map((y, i) => (
+          <path key={i} fill="#B22234" d={`M0 ${y}h32v2.29H0z`} />
+        ))}
+        <path fill="#3C3B6E" d="M0 0h13.7v14.86H0z" />
+      </g>
+    </svg>
+  );
+};
 
-const FlagCA = () => (
-  <svg className="w-5 h-5 rounded-full shadow-md shrink-0 border border-white/20" viewBox="0 0 32 32">
-    <clipPath id="f-ca"><circle cx="16" cy="16" r="16" /></clipPath>
-    <g clipPath="url(#f-ca)">
-      <path fill="#FFF" d="M0 0h32v32H0z" />
-      <path fill="#D80621" d="M0 0h8v32H0zM24 0h8v32h-8z" />
-      <path fill="#D80621" d="M16 7l1.2 2.4 2.6-.6-.9 2.5 2.3 1.3-2.1 1.5.8 2.5-2.5-.7L16 18l-1.4-2.1-2.5.7.8-2.5-2.1-1.5 2.3-1.3-.9-2.5 2.6.6L16 7z" />
-    </g>
-  </svg>
-);
+const FlagCA = () => {
+  const id = useId();
+  return (
+    <svg className="w-5 h-5 rounded-full shadow-md shrink-0 border border-white/20" viewBox="0 0 32 32">
+      <clipPath id={id}><circle cx="16" cy="16" r="16" /></clipPath>
+      <g clipPath={`url(#${id})`}>
+        <path fill="#FFF" d="M0 0h32v32H0z" />
+        <path fill="#D80621" d="M0 0h8v32H0zM24 0h8v32h-8z" />
+        <path fill="#D80621" d="M16 7l1.2 2.4 2.6-.6-.9 2.5 2.3 1.3-2.1 1.5.8 2.5-2.5-.7L16 18l-1.4-2.1-2.5.7.8-2.5-2.1-1.5 2.3-1.3-.9-2.5 2.6.6L16 7z" />
+      </g>
+    </svg>
+  );
+};
 
-const FlagUK = () => (
-  <svg className="w-5 h-5 rounded-full shadow-md shrink-0 border border-white/20" viewBox="0 0 32 32">
-    <clipPath id="f-uk"><circle cx="16" cy="16" r="16" /></clipPath>
-    <g clipPath="url(#f-uk)">
-      <path fill="#012169" d="M0 0h32v32H0z" />
-      <path stroke="#FFF" strokeWidth="6" d="M0 0l32 32M32 0L0 32" />
-      <path stroke="#C8102E" strokeWidth="3" d="M0 0l32 32M32 0L0 32" />
-      <path stroke="#FFF" strokeWidth="10" d="M16 0v32M0 16h32" />
-      <path stroke="#C8102E" strokeWidth="6" d="M16 0v32M0 16h32" />
-    </g>
-  </svg>
-);
+const FlagUK = () => {
+  const id = useId();
+  return (
+    <svg className="w-5 h-5 rounded-full shadow-md shrink-0 border border-white/20" viewBox="0 0 32 32">
+      <clipPath id={id}><circle cx="16" cy="16" r="16" /></clipPath>
+      <g clipPath={`url(#${id})`}>
+        <path fill="#012169" d="M0 0h32v32H0z" />
+        <path stroke="#FFF" strokeWidth="6" d="M0 0l32 32M32 0L0 32" />
+        <path stroke="#C8102E" strokeWidth="3" d="M0 0l32 32M32 0L0 32" />
+        <path stroke="#FFF" strokeWidth="10" d="M16 0v32M0 16h32" />
+        <path stroke="#C8102E" strokeWidth="6" d="M16 0v32M0 16h32" />
+      </g>
+    </svg>
+  );
+};
 
-const FlagAU = () => (
-  <svg className="w-5 h-5 rounded-full shadow-md shrink-0 border border-white/20" viewBox="0 0 32 32">
-    <clipPath id="f-au"><circle cx="16" cy="16" r="16" /></clipPath>
-    <g clipPath="url(#f-au)">
-      <path fill="#000080" d="M0 0h32v32H0z" />
-      <path stroke="#FFF" strokeWidth="2.5" d="M0 0l16 16M16 0L0 16" />
-      <path stroke="#CC0000" strokeWidth="1.2" d="M0 0l16 16M16 0L0 16" />
-      <path stroke="#FFF" strokeWidth="4" d="M8 0v16M0 8h16" />
-      <path stroke="#CC0000" strokeWidth="2" d="M8 0v16M0 8h16" />
-      <polygon fill="#FFF" points="8,13 6.5,11.5 8.5,11.5 7,10 9,10.5 8.5,8.5 10,10 10.5,8 11,10 12.5,8.5 12,10.5 14,10 12.5,11.5 14.5,11.5 13,13 13.5,15 12,13.5 11,15.5 10.5,13.5 9,15 9.5,13" transform="scale(0.5) translate(4,10)" />
-      <circle cx="24" cy="7" r="1.2" fill="#FFF" />
-      <circle cx="26" cy="13" r="1.2" fill="#FFF" />
-      <circle cx="22" cy="19" r="1.2" fill="#FFF" />
-      <circle cx="26" cy="23" r="1.2" fill="#FFF" />
-      <circle cx="20" cy="25" r="1" fill="#FFF" />
-    </g>
-  </svg>
-);
+const FlagAU = () => {
+  const id = useId();
+  return (
+    <svg className="w-5 h-5 rounded-full shadow-md shrink-0 border border-white/20" viewBox="0 0 32 32">
+      <clipPath id={id}><circle cx="16" cy="16" r="16" /></clipPath>
+      <g clipPath={`url(#${id})`}>
+        <path fill="#000080" d="M0 0h32v32H0z" />
+        <path stroke="#FFF" strokeWidth="2.5" d="M0 0l16 16M16 0L0 16" />
+        <path stroke="#CC0000" strokeWidth="1.2" d="M0 0l16 16M16 0L0 16" />
+        <path stroke="#FFF" strokeWidth="4" d="M8 0v16M0 8h16" />
+        <path stroke="#CC0000" strokeWidth="2" d="M8 0v16M0 8h16" />
+        <polygon fill="#FFF" points="8,13 6.5,11.5 8.5,11.5 7,10 9,10.5 8.5,8.5 10,10 10.5,8 11,10 12.5,8.5 12,10.5 14,10 12.5,11.5 14.5,11.5 13,13 13.5,15 12,13.5 11,15.5 10.5,13.5 9,15 9.5,13" transform="scale(0.5) translate(4,10)" />
+        <circle cx="24" cy="7" r="1.2" fill="#FFF" />
+        <circle cx="26" cy="13" r="1.2" fill="#FFF" />
+        <circle cx="22" cy="19" r="1.2" fill="#FFF" />
+        <circle cx="26" cy="23" r="1.2" fill="#FFF" />
+        <circle cx="20" cy="25" r="1" fill="#FFF" />
+      </g>
+    </svg>
+  );
+};
 
 const flags = [
   { name: 'United States', code: 'US', component: FlagUS },
@@ -91,9 +106,15 @@ const legalLinks = [
 ];
 
 export default function Footer() {
+  const [year, setYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="relative pt-16 border-t-4 border-[#39FF14] overflow-hidden">
-      
+
       {/* 1. Global square-grid background pattern */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
@@ -266,7 +287,8 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
           {/* Copyright text */}
           <p className="text-base md:text-sm font-extrabold text-[#F8FAFC] tracking-wide text-center md:text-left">
-            © {new Date().getFullYear()} <span className="text-[#39FF14]">{CONSTANTS.FOCUS_KEYWORD}</span>. All rights reserved.
+            © {year ?? new Date().getFullYear()}{" "}
+            <span className="text-[#39FF14]">{CONSTANTS.FOCUS_KEYWORD}</span>. All rights reserved.
           </p>
 
           {/* Payment cards */}

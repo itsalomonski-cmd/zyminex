@@ -1,8 +1,5 @@
-'use client';
-
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
 import { CONSTANTS } from '@/lib/seo';
 import { ProductSchema, FAQSchema } from './components/PageSchemas';
 import { blogPosts } from '@/lib/blog';
@@ -85,12 +82,6 @@ const FAQ = dynamic(() => import('./components/FAQ'), {
 });
 
 export default function Home() {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   return (
     <div className="flex flex-col min-h-screen bg-[#081425] text-[#F8FAFC] overflow-hidden">
       <ProductSchema />
@@ -98,13 +89,8 @@ export default function Home() {
 
       {/* =========================================================
           HERO SECTION — two-column (content left, transparent image right)
-          Background photo covers the full hero.
-          Global square-grid pattern layered on top at reduced opacity.
-          New transparent neon.png layer sits UNDER the content and hero image.
-          Mobile: right-column image and neon image hidden, content centered.
           ========================================================= */}
       <section className="relative px-4 pt-36 pb-12 md:pt-24 md:pb-16 lg:pt-38 lg:pb-20 overflow-hidden flex flex-col items-center justify-center min-h-[85vh] lg:min-h-[90vh] w-full bg-[#081425]">
-        {/* ---------- HERO BACKGROUND PHOTO (full bleed) ---------- */}
         <div className="absolute inset-0 z-0">
           <img
             src="/img/background.webp"
@@ -117,7 +103,6 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-b from-[#081425]/10 via-[#0B1F35]/40 to-[#081425]/85" />
         </div>
 
-        {/* ---------- GLOBAL SQUARE-GRID PATTERN (reduced opacity over photo) ---------- */}
         <div
           className="absolute inset-0 z-[1] pointer-events-none"
           style={{
@@ -128,7 +113,6 @@ export default function Home() {
           aria-hidden="true"
         />
 
-        {/* ---------- NEW NEON EFFECT IMAGE (hidden on mobile, visible on desktop) ---------- */}
         <div className="hidden lg:block absolute bottom-0 right-0 w-[80%] h-[90%] z-[2] pointer-events-none">
           <img
             src="/img/neon.png"
@@ -140,12 +124,10 @@ export default function Home() {
           />
         </div>
 
-        {/* ---------- SOFT NEON GLOWS ---------- */}
         <div className="absolute -top-20 left-1/3 -translate-x-1/2 w-[500px] h-[300px] bg-[#39FF14]/10 blur-[140px] rounded-full pointer-events-none z-[1]" />
         <div className="absolute bottom-0 right-1/4 w-[400px] h-[260px] bg-[#008000]/15 blur-[140px] rounded-full pointer-events-none z-[1]" />
 
         <FadeIn className="relative z-10 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center my-auto">
-          {/* ---------- LEFT COLUMN (content) ---------- */}
           <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
             <div className="inline-flex items-center gap-2 bg-[#0B1F35]/70 border border-[#39FF14]/50 px-4 py-2 rounded-full mb-6 backdrop-blur-md">
               <Medal className="w-4 h-4 text-[#39FF14]" />
@@ -154,12 +136,10 @@ export default function Home() {
               </span>
             </div>
 
-            {/* H1 now takes more width and flows naturally */}
             <h1 className="w-full text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-black tracking-tight uppercase text-[#F8FAFC] mb-5 leading-[1.05]">
               <span className="text-[#39FF14]">ZYMINEX</span> PREMIUM IPTV PROVIDER
             </h1>
 
-            {/* SIMPLE, CLEAN DESCRIPTION — no multi-color highlighting */}
             <p className="text-base sm:text-lg text-[#94A3B8] max-w-xl lg:max-w-lg mx-auto lg:mx-0 mb-8 font-medium leading-relaxed">
               Zyminex brings 55,000+ live channels and 150,000+ movies to your screen in crystal-clear 4K. Catch every NFL, NBA, MLB, UFC and PPV night — on any device, with no contract. Start your free trial today.
             </p>
@@ -179,7 +159,6 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* 3 STATS IN ONE LINE */}
             <div className="flex flex-nowrap justify-center lg:justify-start gap-3 sm:gap-6 text-[10px] md:text-xs text-[#F8FAFC] font-bold uppercase tracking-widest w-full">
               <span className="flex items-center gap-1.5 whitespace-nowrap">
                 <Zap className="w-3.5 h-3.5 text-[#39FF14] shrink-0" /> 4K Ultra HD
@@ -193,13 +172,10 @@ export default function Home() {
             </div>
           </div>
 
-          {/* ---------- RIGHT COLUMN (transparent image) — bigger, fills empty space ---------- */}
           <div className="hidden lg:block lg:col-span-6 relative">
-            {/* Soft glow behind the transparent subject for depth (no frame, no card) */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="w-[90%] h-[90%] bg-[#39FF14]/15 blur-[110px] rounded-full" />
             </div>
-            {/* Changed aspect to 4/3 and scaled up to fill the vertical space */}
             <div className="relative w-full aspect-[4/3] lg:aspect-[5/4]">
               <img
                 src="/img/hero.png"
@@ -212,18 +188,16 @@ export default function Home() {
           </div>
         </FadeIn>
       </section>
-      
-            {/* =========================================================
+
+      {/* =========================================================
           PARTNER SLIDER
           ========================================================= */}
       <div className="min-h-[128px] bg-[#081425]">
-        {isMounted ? <PartnerSlider /> : <div className="h-32 bg-transparent" />}
+        <PartnerSlider />
       </div>
 
       {/* =========================================================
           3-STEP SETUP GUIDE
-          BG: #081425 (dark)
-          Cards: #0F2942 with #39FF14 accents
           ========================================================= */}
       <section className="py-28 bg-[#081425] w-full relative overflow-hidden border-t border-[#1E3A52]">
         <div className="absolute inset-0 bg-[radial-gradient(#1E3A52_1px,transparent_1px)] [background-size:28px_28px] opacity-[0.15] pointer-events-none" />
@@ -253,7 +227,6 @@ export default function Home() {
           </FadeIn>
 
           <FadeInStagger className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 relative">
-            {/* Step 1 */}
             <FadeInItem className="group relative z-10 flex flex-col justify-between bg-[#0F2942] text-[#F8FAFC] rounded-[2.5rem] p-8 sm:p-10 border-2 border-[#1E3A52] shadow-[0_15px_35px_rgba(0,0,0,0.35)] hover:border-[#39FF14] hover:shadow-[0_25px_50px_rgba(57,255,20,0.18)] hover:-translate-y-2.5 transition-all duration-300">
               <div>
                 <div className="flex items-center justify-between mb-8 relative">
@@ -300,7 +273,6 @@ export default function Home() {
               </div>
             </FadeInItem>
 
-            {/* Step 2 */}
             <FadeInItem className="group relative z-10 flex flex-col justify-between bg-[#0F2942] text-[#F8FAFC] rounded-[2.5rem] p-8 sm:p-10 border-2 border-[#1E3A52] shadow-[0_15px_35px_rgba(0,0,0,0.35)] hover:border-[#39FF14] hover:shadow-[0_25px_50px_rgba(57,255,20,0.18)] hover:-translate-y-2.5 transition-all duration-300">
               <div>
                 <div className="flex items-center justify-between mb-8 relative">
@@ -347,7 +319,6 @@ export default function Home() {
               </div>
             </FadeInItem>
 
-            {/* Step 3 */}
             <FadeInItem className="group relative z-10 flex flex-col justify-between bg-[#0F2942] text-[#F8FAFC] rounded-[2.5rem] p-8 sm:p-10 border-2 border-[#1E3A52] shadow-[0_15px_35px_rgba(0,0,0,0.35)] hover:border-[#39FF14] hover:shadow-[0_25px_50px_rgba(57,255,20,0.18)] hover:-translate-y-2.5 transition-all duration-300">
               <div>
                 <div className="flex items-center justify-between mb-8 relative">
@@ -397,10 +368,8 @@ export default function Home() {
         </div>
       </section>
 
-
       {/* =========================================================
           MEDIA GRID / CHANNELS
-          BG: #081425
           ========================================================= */}
       <section
         id="channels"
@@ -416,22 +385,14 @@ export default function Home() {
             </p>
           </div>
         </FadeIn>
-        {isMounted ? (
-          <MovieSlider />
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-7xl mx-auto px-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="aspect-[2/3] bg-[#0F2942]/60 rounded-2xl" />
-            ))}
-          </div>
-        )}
+        <MovieSlider />
       </section>
 
       {/* =========================================================
           PRICING SECTION
           ========================================================= */}
       <div className="min-h-[600px] bg-[#081425]" id="pricing-section">
-        {isMounted ? <PricingSection /> : <div className="h-[600px] bg-transparent" />}
+        <PricingSection />
       </div>
 
       <section className="w-full max-w-4xl mx-auto px-4 my-8 flex justify-center items-center bg-[#081425]">
@@ -503,10 +464,8 @@ export default function Home() {
         </div>
       </section>
 
-
       {/* =========================================================
           LIVING ROOM SECTION
-          BG: #081425 (dark)
           ========================================================= */}
       <section className="w-full bg-[#081425] py-20 md:py-28 flex flex-col items-center justify-center overflow-hidden">
         <div className="w-full max-w-7xl px-4 text-center mb-8">
@@ -547,14 +506,10 @@ export default function Home() {
         </div>
       </section>
 
-
-
       {/* =========================================================
           ANIMATED STATISTICS
-          BG: #09090B
           ========================================================= */}
       <section className="py-24 bg-[#09090B] relative overflow-hidden border-y border-[#27272A]">
-        {/* Global square-grid background pattern */}
         <div
           className="absolute inset-0 z-0 pointer-events-none"
           style={{
@@ -613,7 +568,6 @@ export default function Home() {
 
       {/* =========================================================
           BENEFITS SECTION
-          BG: #081425
           ========================================================= */}
       <section className="py-24 bg-[#081425] relative overflow-hidden border-t border-[#1E3A52]">
         <div className="absolute inset-0 bg-[radial-gradient(#1E3A52_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.12] pointer-events-none" />
@@ -639,18 +593,8 @@ export default function Home() {
             {[
               {
                 iconSvg: (
-                  <svg
-                    className="w-7 h-7 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
-                    />
+                  <svg className="w-7 h-7 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
                   </svg>
                 ),
                 title: 'Massive On-Demand Library',
@@ -658,13 +602,7 @@ export default function Home() {
               },
               {
                 iconSvg: (
-                  <svg
-                    className="w-7 h-7 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
+                  <svg className="w-7 h-7 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 ),
@@ -673,18 +611,8 @@ export default function Home() {
               },
               {
                 iconSvg: (
-                  <svg
-                    className="w-7 h-7 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
+                  <svg className="w-7 h-7 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 ),
                 title: 'Region-Optimized Routing',
@@ -692,18 +620,8 @@ export default function Home() {
               },
               {
                 iconSvg: (
-                  <svg
-                    className="w-7 h-7 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                    />
+                  <svg className="w-7 h-7 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                   </svg>
                 ),
                 title: 'All Major US Sports',
@@ -711,18 +629,8 @@ export default function Home() {
               },
               {
                 iconSvg: (
-                  <svg
-                    className="w-7 h-7 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
+                  <svg className="w-7 h-7 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 ),
                 title: '7-Day Electronic Program Guide',
@@ -730,18 +638,8 @@ export default function Home() {
               },
               {
                 iconSvg: (
-                  <svg
-                    className="w-7 h-7 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                    />
+                  <svg className="w-7 h-7 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>
                 ),
                 title: 'Multi-Device Connections',
@@ -777,12 +675,11 @@ export default function Home() {
           GLOBAL SERVER MAP
           ========================================================= */}
       <div className="min-h-[400px] bg-[#081425]">
-        {isMounted ? <GlobalServerMap /> : <div className="h-[400px] bg-transparent" />}
+        <GlobalServerMap />
       </div>
 
       {/* =========================================================
           CHANNEL CATEGORIES
-          BG: #081425
           ========================================================= */}
       <section className="py-24 bg-[#081425] relative border-t border-[#1E3A52]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -806,169 +703,81 @@ export default function Home() {
             {[
               {
                 cat: 'Live Sports Networks',
-                channels:
-                  'Watch the NFL, NBA, MLB, NHL, UFC, and major PPV fight nights with motion that stays clean and sharp.',
+                channels: 'Watch the NFL, NBA, MLB, NHL, UFC, and major PPV fight nights with motion that stays clean and sharp.',
                 footer: ['4K Streaming', 'Live Now'],
                 iconSvg: (
-                  <svg
-                    className="w-6 h-6 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                    />
+                  <svg className="w-6 h-6 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                   </svg>
                 ),
               },
               {
                 cat: 'US Networks & Cable',
-                channels:
-                  'Full live coverage of ABC, CBS, NBC, Fox, ESPN, CNN, MSNBC, HBO, Showtime, and Starz.',
+                channels: 'Full live coverage of ABC, CBS, NBC, Fox, ESPN, CNN, MSNBC, HBO, Showtime, and Starz.',
                 footer: ['4K Ready', 'Live'],
                 iconSvg: (
-                  <svg
-                    className="w-6 h-6 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                    />
+                  <svg className="w-6 h-6 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                   </svg>
                 ),
               },
               {
                 cat: 'Movies & On Demand',
-                channels:
-                  'Thousands of cinema releases, streaming originals, and complete TV box sets refreshed daily.',
+                channels: 'Thousands of cinema releases, streaming originals, and complete TV box sets refreshed daily.',
                 footer: ['Crisp Picture', 'Available'],
                 iconSvg: (
-                  <svg
-                    className="w-6 h-6 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
-                    />
+                  <svg className="w-6 h-6 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
                   </svg>
                 ),
               },
               {
                 cat: 'Kids & Family',
-                channels:
-                  'Family-friendly shows, cartoons, and educational series that parents can trust for younger viewers.',
+                channels: 'Family-friendly shows, cartoons, and educational series that parents can trust for younger viewers.',
                 footer: ['HD Quality', 'Streaming'],
                 iconSvg: (
-                  <svg
-                    className="w-6 h-6 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                    />
+                  <svg className="w-6 h-6 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                 ),
               },
               {
                 cat: 'Global Television',
-                channels:
-                  'International networks from Europe, Asia, the Middle East, and Latin America so you can stay close to home.',
+                channels: 'International networks from Europe, Asia, the Middle East, and Latin America so you can stay close to home.',
                 footer: ['HD Feed', 'On Air'],
                 iconSvg: (
-                  <svg
-                    className="w-6 h-6 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728m-9.9-2.829a5 5 0 010-7.07m7.072 0a5 5 0 010 7.07M13 12a1 1 0 11-2 0 1 1 0 012 0z"
-                    />
+                  <svg className="w-6 h-6 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728m-9.9-2.829a5 5 0 010-7.07m7.072 0a5 5 0 010 7.07M13 12a1 1 0 11-2 0 1 1 0 012 0z" />
                   </svg>
                 ),
               },
               {
                 cat: 'Documentary & Nature',
-                channels:
-                  'Educational content about science, history, wildlife, and geography for viewers who love to learn.',
+                channels: 'Educational content about science, history, wildlife, and geography for viewers who love to learn.',
                 footer: ['Crisp Picture', 'Available'],
                 iconSvg: (
-                  <svg
-                    className="w-6 h-6 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                    />
+                  <svg className="w-6 h-6 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
                 ),
               },
               {
                 cat: 'News & Business',
-                channels:
-                  'Live national and international news, business coverage, and financial market updates around the clock.',
+                channels: 'Live national and international news, business coverage, and financial market updates around the clock.',
                 footer: ['HD Feed', 'On Air'],
                 iconSvg: (
-                  <svg
-                    className="w-6 h-6 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H17"
-                    />
+                  <svg className="w-6 h-6 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H17" />
                   </svg>
                 ),
               },
               {
                 cat: 'Music & Entertainment',
-                channels:
-                  'Music video channels, live concert broadcasts, and premium entertainment networks for every taste.',
+                channels: 'Music video channels, live concert broadcasts, and premium entertainment networks for every taste.',
                 footer: ['Crisp Picture', 'Available'],
                 iconSvg: (
-                  <svg
-                    className="w-6 h-6 text-[#39FF14]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
-                    />
+                  <svg className="w-6 h-6 text-[#39FF14]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
                   </svg>
                 ),
               },
@@ -1002,14 +811,12 @@ export default function Home() {
 
       {/* =========================================================
           FEATURE BLOCKS (4K + SPORTS)
-          BG: #081425
           ========================================================= */}
       <section className="bg-[#081425] py-24 border-y border-[#1E3A52] relative overflow-hidden">
         <div className="absolute top-1/4 left-0 w-96 h-96 bg-[#008000]/20 blur-[150px] rounded-full pointer-events-none" />
         <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-[#008000]/20 blur-[150px] rounded-full pointer-events-none" />
 
         <div className="mx-auto max-w-7xl space-y-28 px-4 sm:px-6 lg:px-8 relative z-10">
-          {/* Block 1: 4K Quality */}
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div className="relative order-1 overflow-hidden rounded-[2.5rem] bg-[#0F2942] border-2 border-[#1E3A52] p-3 shadow-2xl transition-all duration-500 hover:border-[#39FF14]">
               <div className="relative aspect-[4/3] overflow-hidden rounded-[1.8rem] sm:aspect-video lg:aspect-[5/4]">
@@ -1097,7 +904,6 @@ export default function Home() {
             </FadeIn>
           </div>
 
-          {/* Block 2: Live Sports */}
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <FadeIn className="order-2 lg:order-1">
               <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#0B1F35] border border-[#39FF14]/40 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-[#39FF14]">
@@ -1187,7 +993,6 @@ export default function Home() {
 
       {/* =========================================================
           COMPARISON TABLE
-          BG: #081425
           ========================================================= */}
       <section className="py-24 relative overflow-hidden bg-[#081425]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -1226,64 +1031,21 @@ export default function Home() {
                 </div>
 
                 {[
-                  {
-                    feature: 'Monthly Cost',
-                    us: 'From $35 / 3 months',
-                    cable: '$80 to $140 per month',
-                  },
-                  {
-                    feature: 'Contract Terms',
-                    us: 'No Contract – Cancel Anytime',
-                    cable: '12 to 24 Month Contracts',
-                  },
-                  {
-                    feature: 'Live Channels',
-                    us: 'Large Channel Lineup',
-                    cable: '60 to 100 Channels',
-                  },
-                  {
-                    feature: 'On Demand Movies',
-                    us: 'Extensive On-Demand Catalog',
-                    cable: 'Limited On Demand Selection',
-                  },
-                  {
-                    feature: 'Ultra HD Quality',
-                    us: 'Standard Inclusion',
-                    cable: 'Extra HD Hardware Fees',
-                    usIcon: true,
-                  },
-                  {
-                    feature: 'Multiple Screens',
-                    us: 'Multi-Device Support',
-                    cable: 'Additional Box Rental Fees',
-                    usIcon: true,
-                  },
-                  {
-                    feature: 'Sports Events',
-                    us: 'NFL, NBA, MLB, UFC Included',
-                    cable: 'Extra Sports Package Fees',
-                    usIcon: true,
-                  },
-                  {
-                    feature: 'International Feeds',
-                    us: 'Global Networks Included',
-                    cable: 'Restricted Add-on Options',
-                  },
+                  { feature: 'Monthly Cost', us: 'From $35 / 3 months', cable: '$80 to $140 per month' },
+                  { feature: 'Contract Terms', us: 'No Contract – Cancel Anytime', cable: '12 to 24 Month Contracts' },
+                  { feature: 'Live Channels', us: 'Large Channel Lineup', cable: '60 to 100 Channels' },
+                  { feature: 'On Demand Movies', us: 'Extensive On-Demand Catalog', cable: 'Limited On Demand Selection' },
+                  { feature: 'Ultra HD Quality', us: 'Standard Inclusion', cable: 'Extra HD Hardware Fees', usIcon: true },
+                  { feature: 'Multiple Screens', us: 'Multi-Device Support', cable: 'Additional Box Rental Fees', usIcon: true },
+                  { feature: 'Sports Events', us: 'NFL, NBA, MLB, UFC Included', cable: 'Extra Sports Package Fees', usIcon: true },
+                  { feature: 'International Feeds', us: 'Global Networks Included', cable: 'Restricted Add-on Options' },
                 ].map((row, idx) => (
                   <div key={idx} className="grid grid-cols-3 gap-0 contents">
-                    <div
-                      className={`p-6 border-r border-b border-[#1E3A52] ${
-                        idx % 2 === 0 ? 'bg-[#0B1F35]' : 'bg-[#081425]'
-                      }`}
-                    >
+                    <div className={`p-6 border-r border-b border-[#1E3A52] ${idx % 2 === 0 ? 'bg-[#0B1F35]' : 'bg-[#081425]'}`}>
                       <span className="text-[#F8FAFC] font-bold text-sm">{row.feature}</span>
                     </div>
 
-                    <div
-                      className={`p-6 border-r border-b border-[#1E3A52] ${
-                        idx % 2 === 0 ? 'bg-[#0B1F35]' : 'bg-[#081425]'
-                      }`}
-                    >
+                    <div className={`p-6 border-r border-b border-[#1E3A52] ${idx % 2 === 0 ? 'bg-[#0B1F35]' : 'bg-[#081425]'}`}>
                       {row.usIcon ? (
                         <div className="flex items-center gap-2">
                           <CheckCircle2 className="w-5 h-5 text-[#39FF14]" />
@@ -1294,11 +1056,7 @@ export default function Home() {
                       )}
                     </div>
 
-                    <div
-                      className={`p-6 border-b border-[#1E3A52] ${
-                        idx % 2 === 0 ? 'bg-[#081425]' : 'bg-[#0B1F35]/70'
-                      }`}
-                    >
+                    <div className={`p-6 border-b border-[#1E3A52] ${idx % 2 === 0 ? 'bg-[#081425]' : 'bg-[#0B1F35]/70'}`}>
                       <span className="text-[#94A3B8] text-sm font-medium">{row.cable}</span>
                     </div>
                   </div>
@@ -1315,21 +1073,10 @@ export default function Home() {
               { feature: 'On Demand Titles', us: 'Large Catalog', cable: 'Limited Selection' },
               { feature: '4K Streaming', us: 'Included Standard', cable: 'Extra Hardware Fee' },
               { feature: 'Multi Screen', us: 'Multi Device', cable: 'Fee per box' },
-              {
-                feature: 'Sports Events',
-                us: 'NFL, NBA, MLB, UFC Included',
-                cable: 'Extra Monthly Fees',
-              },
-              {
-                feature: 'International Feeds',
-                us: 'Global Networks',
-                cable: 'Extra Add-ons',
-              },
+              { feature: 'Sports Events', us: 'NFL, NBA, MLB, UFC Included', cable: 'Extra Monthly Fees' },
+              { feature: 'International Feeds', us: 'Global Networks', cable: 'Extra Add-ons' },
             ].map((row, idx) => (
-              <div
-                key={idx}
-                className="bg-[#0F2942] text-[#F8FAFC] rounded-3xl border border-[#39FF14]/30 p-5 shadow-lg"
-              >
+              <div key={idx} className="bg-[#0F2942] text-[#F8FAFC] rounded-3xl border border-[#39FF14]/30 p-5 shadow-lg">
                 <div className="text-center mb-3">
                   <span className="text-[#39FF14] text-xs font-black uppercase tracking-wider">
                     {row.feature}
@@ -1357,7 +1104,6 @@ export default function Home() {
 
       {/* =========================================================
           CUSTOMER REVIEWS
-          BG: #081425
           ========================================================= */}
       <section className="py-24 bg-[#081425] border-t border-[#1E3A52]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1380,22 +1126,19 @@ export default function Home() {
             {[
               {
                 name: 'James T.',
-                avatar:
-                  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+                avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
                 text: "I spent months hunting for an IPTV Provider that wouldn't freeze during big games on my Firestick. Zyminex finally delivered. Setup took a few minutes and the picture is crystal clear.",
                 role: 'Chicago, IL',
               },
               {
                 name: 'Jennifer L.',
-                avatar:
-                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+                avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
                 text: 'Cancelled my cable package last month and switched to Zyminex. The team walked me through setup via chat in just a few minutes, and I tested everything on the free trial before paying. Highly recommend.',
                 role: 'Austin, TX',
               },
               {
                 name: 'Olivia M.',
-                avatar:
-                  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+                avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
                 text: "Great mix of live sports, NFL, NBA, and on-demand titles. IPTV Extreme Pro runs smooth on my Android box here in the States. Easily the best IPTV service I've tried — and I've tried a lot.",
                 role: 'Denver, CO',
               },
@@ -1453,7 +1196,6 @@ export default function Home() {
 
       {/* =========================================================
           SUPPORTED DEVICES
-          BG: #081425
           ========================================================= */}
       <section className="py-24 bg-[#081425] w-full relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#008000]/20 blur-[120px] pointer-events-none rounded-full" />
@@ -1482,48 +1224,42 @@ export default function Home() {
               {
                 tag: 'Amazon Firestick & Fire TV',
                 desc: 'Fire OS, Fire TV Cube, and 4K Sticks',
-                detail:
-                  'IPTV Extreme Pro and other popular players run great here for quick channel switching and smooth navigation.',
+                detail: 'IPTV Extreme Pro and other popular players run great here for quick channel switching and smooth navigation.',
                 icon: Zap,
                 code: '01',
               },
               {
                 tag: 'Smart TVs (Samsung & LG)',
                 desc: 'Samsung Tizen OS and LG webOS Systems',
-                detail:
-                  'Install a player app straight from the TV app store and start watching without any extra boxes.',
+                detail: 'Install a player app straight from the TV app store and start watching without any extra boxes.',
                 icon: Tv2,
                 code: '02',
               },
               {
                 tag: 'Android TV & Streaming Boxes',
                 desc: 'Nvidia Shield, Google TV, and Android Boxes',
-                detail:
-                  'Full hardware decoding support for steady frame rates during live sports broadcasts.',
+                detail: 'Full hardware decoding support for steady frame rates during live sports broadcasts.',
                 icon: Cpu,
                 code: '03',
               },
               {
                 tag: 'Apple TV, iPhone & iPad',
                 desc: 'tvOS and iOS Operating Platforms',
-                detail:
-                  'Smooth performance across iOS player apps with support for cloud-synced settings.',
+                detail: 'Smooth performance across iOS player apps with support for cloud-synced settings.',
                 icon: Smartphone,
                 code: '04',
               },
               {
                 tag: 'Windows PCs & Mac Computers',
                 desc: 'Windows 10 and 11, macOS, and Linux',
-                detail:
-                  'Stream directly through desktop media players or a web browser interface.',
+                detail: 'Stream directly through desktop media players or a web browser interface.',
                 icon: MonitorSmartphone,
                 code: '05',
               },
               {
                 tag: 'MAG & Dedicated Boxes',
                 desc: 'Portal Media Players and Set-Top Devices',
-                detail:
-                  'Native MAC address integration with full Electronic Program Guide functionality.',
+                detail: 'Native MAC address integration with full Electronic Program Guide functionality.',
                 icon: ShieldCheck,
                 code: '06',
               },
@@ -1567,13 +1303,12 @@ export default function Home() {
       {/* =========================================================
           FAQ
           ========================================================= */}
-      <div   className="py-24 w-full bg-[#09090B] relative overflow-hidden">
-        {isMounted ? <FAQ /> : <div className="h-[400px] bg-transparent" />}
+      <div className="py-24 w-full bg-[#09090B] relative overflow-hidden">
+        <FAQ />
       </div>
 
       {/* =========================================================
           BLOG SECTION
-          BG: #081425
           ========================================================= */}
       <section className="py-24 bg-[#081425] w-full relative overflow-hidden border-t border-[#1E3A52]">
         <div className="absolute inset-0 bg-[radial-gradient(#1E3A52_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.12] pointer-events-none" />
