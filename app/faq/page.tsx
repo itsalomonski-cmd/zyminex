@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useMemo } from 'react';
 import { CONSTANTS } from '@/lib/seo';
 import Link from 'next/link';

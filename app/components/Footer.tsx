@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 import { CONSTANTS } from "@/lib/seo";

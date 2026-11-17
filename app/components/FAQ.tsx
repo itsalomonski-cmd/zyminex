@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { FadeIn, FadeInStagger, FadeInItem } from './AnimatedSection';
 import { ChevronDown, HelpCircle, Sparkles } from 'lucide-react';
