@@ -1,5 +1,3 @@
-'use client';
-
 import { FadeIn } from './AnimatedSection';
 import { Wifi, Server, ShieldCheck, Zap } from 'lucide-react';
 import { CONSTANTS } from '@/lib/seo';

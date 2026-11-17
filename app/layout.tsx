@@ -112,7 +112,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: './',
+    canonical: 'https://zyminex.plus/',
     languages: {
       'en-US': SITE_URL,
       'x-default': SITE_URL,
