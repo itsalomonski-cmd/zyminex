@@ -14,52 +14,10 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { CONSTANTS } from '@/lib/seo';
+import type { BlogPost } from '@/lib/blog';
+import { blogImageProps, formatPostDate, getPostCategoryLabel, getPostReadMinutes } from '@/lib/blog-helpers';
 
 const BRAND = CONSTANTS.BRAND_NAME;
-
-// ---------------------------------------------------------------------------
-// HELPERS
-// ---------------------------------------------------------------------------
-function getCategoryLabel(post: any): string {
-  if (post.category) {
-    const map: Record<string, string> = {
-      setup: 'Setup Guide',
-      review: 'Review',
-      sports: 'Live Sports',
-      tips: 'Tips & Tricks',
-      news: 'News',
-    };
-    return map[post.category] || post.category;
-  }
-  if (post.keywords && post.keywords.length > 0) return post.keywords[0];
-  return 'IPTV Provider Guide';
-}
-
-function getReadTime(post: any): number {
-  if (post.readTime) {
-    const match = String(post.readTime).match(/(\d+)/);
-    if (match) return parseInt(match[1]);
-  }
-  const words = (post.content || '')
-    .replace(/<[^>]*>/g, '')
-    .split(/\s+/)
-    .filter(Boolean).length;
-  return Math.max(3, Math.ceil(words / 200));
-}
-
-function formatDateShort(dateStr: string): string {
-  try {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
-    return d.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  } catch {
-    return dateStr;
-  }
-}
 
 // ---------------------------------------------------------------------------
 // SIDEBAR
@@ -69,7 +27,7 @@ export default function ArticleScrollSidebar({
   whatsappIboMsg,
   whatsappSubMsg,
 }: {
-  relatedPosts: any[];
+  relatedPosts: BlogPost[];
   whatsappIboMsg: string;
   whatsappSubMsg: string;
 }) {
@@ -216,7 +174,7 @@ export default function ArticleScrollSidebar({
             <div className="mt-5 pt-4 border-t border-[#27272A] text-center">
               <Link
                 href="/pricing"
-                className="text-xs font-black text-[#F8FAFC] uppercase tracking-wider hover:underline inline-flex items-center gap-1 group cursor-pointer"
+                className="text-xs font-black text-[#F8FAFC] uppercase tracking-wider hover:underline inline-flex items-center gap-1 group cursor-pointer py-2 -my-2"
               >
                 View all IPTV Subscription plans
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform text-[#39FF14]" />
@@ -236,9 +194,9 @@ export default function ArticleScrollSidebar({
 
             <div className="space-y-4">
               {relatedPosts.map((relPost) => {
-                const relCategory = getCategoryLabel(relPost);
-                const relReadTime = getReadTime(relPost);
-                const relDate = formatDateShort(relPost.date);
+                const relCategory = getPostCategoryLabel(relPost, 'IPTV Provider Guide');
+                const relReadTime = getPostReadMinutes(relPost);
+                const relDate = formatPostDate(relPost.date);
 
                 return (
                   <Link
@@ -248,12 +206,11 @@ export default function ArticleScrollSidebar({
                   >
                     <div className="relative aspect-[16/10] overflow-hidden bg-[#09090B]">
                       <img
-                        src={relPost.image}
+                        {...blogImageProps(relPost.image, '(max-width: 1024px) 100vw, 350px')}
                         alt={relPost.title}
                         width={400}
                         height={250}
                         loading="lazy"
-                        sizes="(max-width: 1024px) 100vw, 350px"
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-[#09090B]/20 to-transparent opacity-70 group-hover:opacity-50 transition-opacity duration-500" />

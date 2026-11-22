@@ -30,7 +30,6 @@ import ShareButtons from '../../components/ShareButtons';
 
 const SITE_URL = CONSTANTS.SITE_URL;
 const BRAND = CONSTANTS.BRAND_NAME;
-const FOCUS_KEYWORD = CONSTANTS.FOCUS_KEYWORD;
 
 // ---------------------------------------------------------------------------
 // COUNTRY FLAG — complete support for every country in channels-data.ts
@@ -301,7 +300,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const title = `${category.name} | ${BRAND} 4K Streaming 2026`;
-  const description = `Watch ${category.name.toLowerCase()} on ${BRAND} — ${category.totalChannels.toLocaleString('en-US')}+ live channels including ${category.channels.slice(0, 3).map((c) => c.name).join(', ')}.`;
+  const description = `Watch ${category.name} on ${BRAND} — ${category.totalChannels.toLocaleString('en-US')}+ live channels including ${category.channels.slice(0, 3).map((c) => c.name).join(', ')}.`;
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -322,11 +321,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'website',
       locale: 'en_US',
       siteName: BRAND,
+      // Shared 1200x630 share image (background.webp is 1920x1000, so the
+      // previously declared 1200x630 dimensions were wrong).
       images: [
         {
-          url: `${SITE_URL}/img/background.webp`,
-          width: 1200,
-          height: 630,
+          ...CONSTANTS.OG_IMAGE,
           alt: `${category.name} - ${BRAND} Channels`,
         },
       ],
@@ -335,7 +334,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title,
       description,
-      images: [`${SITE_URL}/img/background.webp`],
+      images: [CONSTANTS.OG_IMAGE.url],
     },
     robots: {
       index: true,
@@ -377,9 +376,10 @@ export default async function ChannelCategoryPage({ params }: Props) {
         '@type': 'BreadcrumbList',
         '@id': `${SITE_URL}/channels/${category.slug}/#breadcrumb`,
         itemListElement: [
+          // No /channels index route exists; a "#channels" fragment level resolved
+          // to the homepage, duplicating "Home". Hierarchy: Home > Category.
           { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-          { '@type': 'ListItem', position: 2, name: 'Channels', item: `${SITE_URL}/#channels` },
-          { '@type': 'ListItem', position: 3, name: category.name, item: `${SITE_URL}/channels/${category.slug}` },
+          { '@type': 'ListItem', position: 2, name: category.name, item: `${SITE_URL}/channels/${category.slug}` },
         ],
       },
       {
@@ -456,7 +456,7 @@ export default async function ChannelCategoryPage({ params }: Props) {
 
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="flex items-center justify-center gap-2 mb-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#94A3B8] flex-wrap">
-            <Link href="/" className="hover:text-[#39FF14] transition-colors">
+            <Link href="/" className="hover:text-[#39FF14] transition-colors inline-block py-2 -my-2">
               Home
             </Link>
             <span>/</span>
@@ -704,7 +704,7 @@ export default async function ChannelCategoryPage({ params }: Props) {
           <div className="mt-12 text-center">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest cursor-pointer"
+              className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest cursor-pointer py-2 -my-2"
             >
               <ArrowLeft className="w-4 h-4" /> Back to homepage
             </Link>

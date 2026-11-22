@@ -14,3 +14,40 @@
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out;
 }
+
+/* ---------------------------------------------------------------------------
+   ACCESSIBILITY
+   These rules are intentionally NOT inside a cascade layer: unlayered styles
+   take precedence over Tailwind's layered utilities, so the keyboard focus ring
+   cannot be removed by scattered `focus:outline-none` classes.
+   --------------------------------------------------------------------------- */
+
+/* Visible keyboard focus (brand neon green). :focus-visible only applies to
+   keyboard/assistive focus, so mouse and touch interactions look unchanged. */
+:focus-visible {
+  outline: 2px solid #39FF14;
+  outline-offset: 2px;
+}
+
+/* Programmatic focus targets (e.g. <main tabindex="-1"> reached via the
+   "Skip to content" link) are not controls and should not draw a ring. */
+[tabindex="-1"]:focus-visible {
+  outline: none;
+}
+
+/* Respect the operating-system "reduce motion" setting: stop CSS animations,
+   pulses, infinite tickers and smooth scrolling. (Framer Motion animations are
+   handled by <MotionConfig reducedMotion="user"> in app/components/MotionProvider.tsx.) */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

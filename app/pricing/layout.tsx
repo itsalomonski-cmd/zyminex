@@ -1,6 +1,7 @@
 // app/pricing/layout.tsx
 import type { Metadata } from 'next';
 import { CONSTANTS } from '@/lib/seo';
+import { pricingFaqs } from '@/lib/page-faqs';
 
 // ---------------------------------------------------------------------------
 // SEO SAFETY HELPERS — enforce char limits
@@ -71,9 +72,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: `${SITE_URL}/img/structer.webp`,
-        width: 1200,
-        height: 630,
+        ...CONSTANTS.OG_IMAGE,
         alt: `${BRAND} Pricing — 4K IPTV Subscription Plans`,
       },
     ],
@@ -82,7 +81,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: PAGE_TITLE,
     description: PAGE_DESCRIPTION,
-    images: [`${SITE_URL}/img/structer.webp`],
+    images: [CONSTANTS.OG_IMAGE.url],
   },
   category: 'entertainment',
   keywords: [
@@ -111,41 +110,11 @@ export const metadata: Metadata = {
 const PricingPageSchema = () => {
   const currentDate = new Date().toISOString().split('T')[0];
 
-  // Common Digital Delivery Schema Specs
-  const digitalDeliveryDetails = {
-    shippingDetails: {
-      '@type': 'OfferShippingDetails',
-      shippingRate: {
-        '@type': 'MonetaryAmount',
-        value: '0',
-        currency: CONSTANTS.CURRENCY,
-      },
-      shippingDestination: {
-        '@type': 'DefinedRegion',
-        addressCountry: ['US'],
-      },
-      deliveryTime: {
-        '@type': 'ShippingDeliveryTime',
-        handlingTime: {
-          '@type': 'QuantitativeValue',
-          minValue: 0,
-          maxValue: 0,
-          unitCode: 'DAY',
-        },
-        transitTime: {
-          '@type': 'QuantitativeValue',
-          minValue: 0,
-          maxValue: 0,
-          unitCode: 'DAY',
-        },
-      },
-    },
-    hasMerchantReturnPolicy: {
-      '@type': 'MerchantReturnPolicy',
-      applicableCountry: ['US'],
-      returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
-    },
-  };
+  // Shipping and return-policy markup intentionally omitted: shipping does not
+  // apply to a digital subscription, and "MerchantReturnNotPermitted"
+  // contradicted the published Terms (7-day refund). Add a MerchantReturnPolicy
+  // here only once the owner confirms the actual refund policy.
+  const digitalDeliveryDetails = {};
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -156,7 +125,7 @@ const PricingPageSchema = () => {
         '@id': `${PAGE_URL}/#product`,
         name: `${BRAND} IPTV Subscription Plans`,
         alternateName: CONSTANTS.FOCUS_KEYWORD,
-        image: `${SITE_URL}/img/structer.webp`,
+        image: CONSTANTS.OG_IMAGE.url,
         description: `${BRAND} offers premium IPTV plans starting at USD $35 with 55,000+ live channels, 150,000+ movies and TV shows in 4K Ultra HD. Setup is guided on WhatsApp and a free trial is available before you pay.`,
         brand: {
           '@type': 'Brand',
@@ -165,13 +134,6 @@ const PricingPageSchema = () => {
         },
         sku: 'IPTV-PRICING',
         category: 'Streaming Service',
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: '4.9',
-          reviewCount: '1255',
-          bestRating: '5',
-          worstRating: '1',
-        },
         offers: [
           // ---- 1 Screen ----
           {
@@ -293,72 +255,12 @@ const PricingPageSchema = () => {
       {
         '@type': 'FAQPage',
         '@id': `${PAGE_URL}/#faq`,
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: `Which payment methods does ${BRAND} accept?`,
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `${BRAND} accepts all major credit cards (Visa, Mastercard, American Express), PayPal, and cryptocurrencies (Bitcoin, Ethereum, USDT). Every payment is processed securely via encrypted 256 bit SSL connections.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I upgrade or modify my subscription later?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `Yes, you can upgrade at any time to add more screens or switch to a longer period. Just message our WhatsApp help desk and we will adjust your account straight away.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Am I tied to a contract or automatic renewal?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `No, absolutely not. There are no long term contracts and no automatic renewals. Every plan is a prepaid one time payment that stops on its own when the period ends.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'What happens when my subscription expires?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `We will send you a reminder before your subscription ends. You can renew easily through WhatsApp. If you decide not to renew, the service stops automatically with no further obligation.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Do you offer a free trial before I commit?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `Yes. Message us on WhatsApp and we will set you up with a free 24 hour trial so you can test the 4K picture quality and channel lineup on your own device and internet connection. Upgrade to a paid plan only when you are happy.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I use the service on multiple devices simultaneously?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `Yes, depending on your chosen plan. You can pick 1, 2, or 3 simultaneous screens during checkout to watch in multiple rooms at once. Everyone in the household can watch what they want.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Are there discounts for longer subscriptions?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `Yes. Our 12 month plans offer the highest savings, up to 60% off compared to the shorter terms. That is the best value option for a household that knows they will stick with it.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Do I need a VPN to use this IPTV service?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `No VPN is required. Our servers are optimized to deliver smooth, buffer free streaming on your home connection.`,
-            },
-          },
-        ],
+        // Built from the same list the page renders (lib/page-faqs.ts).
+        mainEntity: pricingFaqs.map((faq) => ({
+          '@type': 'Question',
+          name: faq.q,
+          acceptedAnswer: { '@type': 'Answer', text: faq.a },
+        })),
       },
 
       // BREADCRUMB
@@ -404,7 +306,8 @@ export default function PricingLayout({
   return (
     <div className="w-full overflow-x-hidden min-h-screen flex flex-col bg-[#09090B] text-[#F8FAFC]">
       <PricingPageSchema />
-      <main className="flex-grow w-full">{children}</main>
+      {/* div, not <main>: the root layout already provides the single <main> landmark */}
+      <div className="flex-grow w-full">{children}</div>
     </div>
   );
 }

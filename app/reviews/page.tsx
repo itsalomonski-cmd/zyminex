@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useId } from 'react';
 import { CONSTANTS, generateSEOMetadata } from '@/lib/seo';
 import {
   reviews,
@@ -26,7 +27,6 @@ import {
 // ✅ MATCHES seo.ts — SITE_URL already includes https://
 const SITE_URL = CONSTANTS.SITE_URL;
 const BRAND = CONSTANTS.BRAND_NAME;
-const FOCUS_KEYWORD = CONSTANTS.FOCUS_KEYWORD;
 const PAGE_URL = `${SITE_URL}/reviews`;
 
 // ✅ SAFE WhatsApp URL builder
@@ -57,16 +57,19 @@ function CountryFlag({
   country: 'AU' | 'US' | 'UK' | 'CA';
   size?: 'sm' | 'md' | 'lg';
 }) {
+  // Unique per instance: the same flag renders once per review, and a fixed id
+  // produced duplicate ids in the page.
+  const uid = useId();
   const dim = size === 'lg' ? 'w-7 h-7' : size === 'sm' ? 'w-4 h-4' : 'w-5 h-5';
   const cls = `${dim} rounded-full shrink-0 shadow-md border border-white/20 overflow-hidden`;
 
   if (country === 'US') {
     return (
       <svg className={cls} viewBox="0 0 32 32" aria-label="United States flag">
-        <clipPath id="rv-flag-us">
+        <clipPath id={`${uid}-us`}>
           <circle cx="16" cy="16" r="16" />
         </clipPath>
-        <g clipPath="url(#rv-flag-us)">
+        <g clipPath={`url(#${uid}-us)`}>
           <path fill="#FFF" d="M0 0h32v32H0z" />
           {[0, 4.57, 9.14, 13.71, 18.29, 22.86, 27.43].map((y, i) => (
             <path key={i} fill="#B22234" d={`M0 ${y}h32v2.29H0z`} />
@@ -79,10 +82,10 @@ function CountryFlag({
   if (country === 'UK') {
     return (
       <svg className={cls} viewBox="0 0 32 32" aria-label="United Kingdom flag">
-        <clipPath id="rv-flag-uk">
+        <clipPath id={`${uid}-uk`}>
           <circle cx="16" cy="16" r="16" />
         </clipPath>
-        <g clipPath="url(#rv-flag-uk)">
+        <g clipPath={`url(#${uid}-uk)`}>
           <path fill="#012169" d="M0 0h32v32H0z" />
           <path stroke="#FFF" strokeWidth="6" d="M0 0l32 32M32 0L0 32" />
           <path stroke="#C8102E" strokeWidth="3" d="M0 0l32 32M32 0L0 32" />
@@ -95,10 +98,10 @@ function CountryFlag({
   if (country === 'CA') {
     return (
       <svg className={cls} viewBox="0 0 32 32" aria-label="Canada flag">
-        <clipPath id="rv-flag-ca">
+        <clipPath id={`${uid}-ca`}>
           <circle cx="16" cy="16" r="16" />
         </clipPath>
-        <g clipPath="url(#rv-flag-ca)">
+        <g clipPath={`url(#${uid}-ca)`}>
           <path fill="#FFF" d="M0 0h32v32H0z" />
           <path fill="#D80621" d="M0 0h8v32H0zM24 0h8v32h-8z" />
           <path
@@ -111,10 +114,10 @@ function CountryFlag({
   }
   return (
     <svg className={cls} viewBox="0 0 32 32" aria-label="Australia flag">
-      <clipPath id="rv-flag-au">
+      <clipPath id={`${uid}-au`}>
         <circle cx="16" cy="16" r="16" />
       </clipPath>
-      <g clipPath="url(#rv-flag-au)">
+      <g clipPath={`url(#${uid}-au)`}>
         <path fill="#012169" d="M0 0h32v32H0z" />
         <path stroke="#FFF" strokeWidth="4" d="M0 0l16 16M16 0L0 16" />
         <path stroke="#C8102E" strokeWidth="2" d="M0 0l16 16M16 0L0 16" />
@@ -133,42 +136,18 @@ function CountryFlag({
 // ---------------------------------------------------------------------------
 // JSON-LD SCHEMA
 // ---------------------------------------------------------------------------
+// Organization and WebSite are defined once, site-wide, in app/layout.tsx and
+// are only referenced here by @id. Product / AggregateRating / Review markup was
+// removed: the rating figures are not backed by verifiable third-party reviews
+// and self-published review markup is not eligible for review rich results.
+// The visible testimonials on this page are unaffected.
 const ReviewsPageSchema = () => {
-  const productId = `${SITE_URL}/#product`;
   const orgId = `${SITE_URL}/#organization`;
   const websiteId = `${SITE_URL}/#website`;
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
-      {
-        '@type': 'Organization',
-        '@id': orgId,
-        name: BRAND,
-        alternateName: `${BRAND} Streaming`,
-        url: SITE_URL,
-        logo: {
-          '@type': 'ImageObject',
-          '@id': `${SITE_URL}/#logo`,
-          url: `${SITE_URL}/img/iptv-logo.webp`,
-          contentUrl: `${SITE_URL}/img/iptv-logo.webp`,
-          width: 512,
-          height: 512,
-          caption: `${BRAND} Logo`,
-        },
-        email: CONSTANTS.CONTACT.email,
-        telephone: CONSTANTS.CONTACT.phone,
-        areaServed: ['US'],
-        sameAs: Object.values(CONSTANTS.SOCIALS ?? {}),
-      },
-      {
-        '@type': 'WebSite',
-        '@id': websiteId,
-        url: SITE_URL,
-        name: BRAND,
-        inLanguage: 'en-US',
-        publisher: { '@id': orgId },
-      },
       {
         '@type': 'WebPage',
         '@id': `${PAGE_URL}/#webpage`,
@@ -180,45 +159,6 @@ const ReviewsPageSchema = () => {
         about: { '@id': orgId },
         breadcrumb: { '@id': `${PAGE_URL}/#breadcrumb` },
       },
-      {
-        '@type': 'Product',
-        '@id': productId,
-        name: `${BRAND} Premium Subscription`,
-        image: `${SITE_URL}/img/structer.webp`,
-        description: `${BRAND} delivers premium 4K live TV and on demand media with 99.9% server uptime and quick WhatsApp guided activation.`,
-        sku: 'IPTV-PREMIUM',
-        category: 'Streaming Service',
-        brand: {
-          '@type': 'Brand',
-          '@id': `${SITE_URL}/#brand`,
-          name: BRAND,
-        },
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: RATING_VALUE,
-          reviewCount: REVIEW_COUNT,
-          bestRating: '5',
-          worstRating: '1',
-        },
-      },
-      ...reviews.map((rev, index) => ({
-        '@type': 'Review',
-        '@id': `${PAGE_URL}/#review-${index + 1}`,
-        reviewRating: {
-          '@type': 'Rating',
-          ratingValue: String(rev.rating),
-          bestRating: '5',
-          worstRating: '1',
-        },
-        author: {
-          '@type': 'Person',
-          name: rev.name,
-        },
-        reviewBody: rev.text,
-        name: rev.title,
-        datePublished: rev.date,
-        itemReviewed: { '@id': productId },
-      })),
       {
         '@type': 'BreadcrumbList',
         '@id': `${PAGE_URL}/#breadcrumb`,

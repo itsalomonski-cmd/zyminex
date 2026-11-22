@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import Link from 'next/link';
 import PricingSection from '../components/PricingSection';
 import ShareButtons from '../components/ShareButtons';
 import { FadeIn, FadeInStagger, FadeInItem } from '../components/AnimatedSection';
 import { CONSTANTS } from '@/lib/seo';
+import { pricingFaqs } from '@/lib/page-faqs';
 import {
   ShieldCheck,
   Zap,
@@ -31,48 +32,63 @@ import {
 // ---------------------------------------------------------------------------
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
+  const id = useId();
 
+  // Accessible accordion: the heading contains the toggle button, and the
+  // answer sits outside the button (previously the whole card, answer included,
+  // was one button, so the answer became part of the button's name and the
+  // heading was lost). Padding is split so the card looks exactly as before.
   return (
-    <button
-      onClick={() => setIsOpen(!isOpen)}
+    <div
       className={`w-full text-left bg-[#18181B] border-2 ${
         isOpen ? 'border-[#39FF14]' : 'border-[#27272A]'
-      } rounded-2xl p-6 hover:border-[#39FF14]/60 shadow-lg transition-all duration-300 group cursor-pointer`}
-      aria-expanded={isOpen}
+      } rounded-2xl hover:border-[#39FF14]/60 shadow-lg transition-all duration-300 group`}
     >
-      <div className="flex justify-between items-center gap-4">
-        <h3
-          className={`text-lg md:text-xl font-black uppercase tracking-tight transition-colors ${
-            isOpen ? 'text-[#39FF14]' : 'text-[#F8FAFC] group-hover:text-[#39FF14]'
-          } flex items-center gap-3`}
+      <h3>
+        <button
+          type="button"
+          id={`${id}-q`}
+          onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+          aria-controls={`${id}-a`}
+          className={`w-full text-left px-6 pt-6 ${isOpen ? 'pb-4' : 'pb-6'} flex justify-between items-center gap-4 transition-all duration-300 cursor-pointer rounded-2xl`}
         >
           <span
-            className={`${
-              isOpen ? 'text-[#39FF14]' : 'text-[#94A3B8]'
-            } font-black text-2xl`}
+            className={`text-lg md:text-xl font-black uppercase tracking-tight transition-colors ${
+              isOpen ? 'text-[#39FF14]' : 'text-[#F8FAFC] group-hover:text-[#39FF14]'
+            } flex items-center gap-3`}
           >
-            Q.
+            <span
+              className={`${
+                isOpen ? 'text-[#39FF14]' : 'text-[#94A3B8]'
+              } font-black text-2xl`}
+            >
+              Q.
+            </span>
+            {question}
           </span>
-          {question}
-        </h3>
-        <ChevronDown
-          className={`w-6 h-6 flex-shrink-0 transition-transform duration-300 ${
-            isOpen
-              ? 'rotate-180 text-[#39FF14]'
-              : 'text-[#94A3B8] group-hover:text-[#39FF14]'
-          }`}
-        />
-      </div>
+          <ChevronDown
+            aria-hidden="true"
+            className={`w-6 h-6 flex-shrink-0 transition-transform duration-300 ${
+              isOpen
+                ? 'rotate-180 text-[#39FF14]'
+                : 'text-[#94A3B8] group-hover:text-[#39FF14]'
+            }`}
+          />
+        </button>
+      </h3>
       <div
-        className={`overflow-hidden transition-all duration-300 ${
-          isOpen ? 'max-h-96 mt-4 opacity-100' : 'max-h-0 opacity-0'
+        id={`${id}-a`}
+        aria-hidden={!isOpen}
+        className={`overflow-hidden transition-all duration-300 px-6 ${
+          isOpen ? 'max-h-96 opacity-100 pb-6' : 'max-h-0 opacity-0'
         }`}
       >
         <p className="text-[#94A3B8] font-medium leading-relaxed pl-10 md:pl-12 border-l-4 border-[#39FF14] ml-2 py-2">
           {answer}
         </p>
       </div>
-    </button>
+    </div>
   );
 }
 
@@ -90,7 +106,7 @@ export default function PricingPage() {
         <div className="absolute inset-0 z-0">
           <img
             src="/img/bg-2.webp"
-            alt={`${CONSTANTS.BRAND_NAME} IPTV Subscription plans and pricing`}
+            alt=""
             fetchPriority="high"
             loading="eager"
             className="absolute inset-0 w-full h-full object-cover brightness-[0.2]"
@@ -317,9 +333,9 @@ export default function PricingPage() {
               <div className="w-16 h-16 rounded-xl bg-[#39FF14]/15 flex items-center justify-center mb-4">
                 <ShieldCheck className="w-8 h-8 text-[#39FF14]" />
               </div>
-              <h4 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-wide">
+              <h3 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-wide">
                 Secure Payments
-              </h4>
+              </h3>
               <p className="text-[#94A3B8] text-sm font-medium">
                 Encrypted transactions via Credit Card, PayPal, and Crypto with 256 bit SSL protection.
               </p>
@@ -329,9 +345,9 @@ export default function PricingPage() {
               <div className="w-16 h-16 rounded-xl bg-[#39FF14]/15 flex items-center justify-center mb-4">
                 <Zap className="w-8 h-8 text-[#39FF14]" />
               </div>
-              <h4 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-wide">
+              <h3 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-wide">
                 Instant Activation
-              </h4>
+              </h3>
               <p className="text-[#94A3B8] text-sm font-medium">
                 Get your IPTV Subscription credentials instantly and start streaming within minutes.
               </p>
@@ -341,9 +357,9 @@ export default function PricingPage() {
               <div className="w-16 h-16 rounded-xl bg-[#39FF14]/15 flex items-center justify-center mb-4">
                 <CreditCard className="w-8 h-8 text-[#39FF14]" />
               </div>
-              <h4 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-wide">
+              <h3 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-wide">
                 Free Trial First
-              </h4>
+              </h3>
               <p className="text-[#94A3B8] text-sm font-medium">
                 Test IPTV services on your own device and internet before you pay a cent.
               </p>
@@ -353,9 +369,9 @@ export default function PricingPage() {
               <div className="w-16 h-16 rounded-xl bg-[#39FF14]/15 flex items-center justify-center mb-4">
                 <Headphones className="w-8 h-8 text-[#39FF14]" />
               </div>
-              <h4 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-wide">
+              <h3 className="text-xl font-black text-[#F8FAFC] mb-2 uppercase tracking-wide">
                 24/7 Global Support
-              </h4>
+              </h3>
               <p className="text-[#94A3B8] text-sm font-medium">
                 Real people on hand around the clock to help with setup, streaming, or anything else you need.
               </p>
@@ -401,38 +417,9 @@ export default function PricingPage() {
           </FadeIn>
 
           <FadeInStagger className="space-y-4 relative z-10">
-            <FAQItem
-              question="Which payment methods do you accept?"
-              answer="We accept all major credit cards (Visa, Mastercard, American Express), PayPal, and cryptocurrencies (Bitcoin, Ethereum, USDT). Every payment is processed via encrypted 256 bit SSL connections."
-            />
-            <FAQItem
-              question="Can I upgrade or modify my IPTV Subscription later?"
-              answer="Yes, you can upgrade at any time to add more screens or switch to a longer period. Just reach our support team and we will adjust your account straight away."
-            />
-            <FAQItem
-              question="Is there a contract or automatic renewal?"
-              answer="No. There are no long term contracts and no automatic renewals. Every plan is a prepaid one time payment that stops on its own when the period ends."
-            />
-            <FAQItem
-              question="What happens when my subscription expires?"
-              answer="We will send you a reminder before your IPTV Subscription ends. You can renew easily through our support team. If you decide not to renew, the service stops automatically with no further obligation."
-            />
-            <FAQItem
-              question="Do you offer a free trial before I commit?"
-              answer="Yes. Request a free trial and we will set you up so you can test the 4K picture quality and channel lineup on your own device and internet connection. Upgrade to a paid IPTV Subscription only when you are happy."
-            />
-            <FAQItem
-              question="Can I use the service on multiple devices at the same time?"
-              answer="Yes, depending on your chosen plan. You can pick 1, 2, or 3 simultaneous screens during checkout to watch in multiple rooms at once. Everyone in the household can watch what they want."
-            />
-            <FAQItem
-              question="Are there discounts for longer subscriptions?"
-              answer="Yes. The 12 month plans offer the highest savings, up to 60% off compared to the shorter terms. That is the best value option for a household that knows they will stick with it."
-            />
-            <FAQItem
-              question="Do I need a VPN to use this IPTV service?"
-              answer="No VPN is required. Our servers are optimized for smooth, buffer free streaming on your home connection."
-            />
+            {pricingFaqs.map((faq) => (
+              <FAQItem key={faq.q} question={faq.q} answer={faq.a} />
+            ))}
           </FadeInStagger>
         </div>
       </section>
@@ -467,7 +454,7 @@ export default function PricingPage() {
                 Choose Your Plan
               </Link>
               <Link
-                href="/firestick-setup"
+                href="/setup"
                 className="w-full sm:w-auto text-center whitespace-nowrap px-8 py-4 rounded-full bg-[#18181B] text-[#F8FAFC] font-black uppercase tracking-widest text-sm transition-transform hover:scale-105 border-2 border-[#27272A] hover:border-[#39FF14] cursor-pointer"
               >
                 Setup Guide

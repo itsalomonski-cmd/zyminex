@@ -20,7 +20,6 @@ import {
 
 const SITE_URL = CONSTANTS.SITE_URL;
 const BRAND = CONSTANTS.BRAND_NAME;
-const FOCUS_KEYWORD = CONSTANTS.FOCUS_KEYWORD;
 const PAGE_URL = `${SITE_URL}/about`;
 
 // ---------------------------------------------------------------------------
@@ -367,7 +366,7 @@ export default function AboutPage() {
         <div className="mt-16 pt-8 border-t border-[#27272A] text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest cursor-pointer"
+            className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest cursor-pointer py-2 -my-2"
           >
             ← Back to homepage
           </Link>

@@ -6,7 +6,6 @@ import { CONSTANTS } from '@/lib/seo';
 
 const FOCUS_KEYWORD = CONSTANTS.FOCUS_KEYWORD;
 const SECONDARY_KEYWORD = CONSTANTS.SECONDARY_FOCUS_KEYWORD;
-const TERTIARY_KEYWORD = CONSTANTS.TERTIARY_FOCUS_KEYWORD;
 
 export default function PartnerSlider() {
   // -------------------------------------------------------------------------

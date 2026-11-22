@@ -1,5 +1,11 @@
 // app/blog/[slug]/page.tsx
-import { blogPosts } from '@/lib/blog';
+import { blogPosts, type BlogPost } from '@/lib/blog';
+import {
+  blogImageProps,
+  getPostCategoryLabel,
+  getPostReadMinutes,
+  optimizeArticleImages,
+} from '@/lib/blog-helpers';
 import { CONSTANTS } from '@/lib/seo';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -28,38 +34,8 @@ const BRAND = CONSTANTS.BRAND_NAME;
 const FOCUS_KEYWORD = CONSTANTS.FOCUS_KEYWORD;
 const LANGUAGE = CONSTANTS.LANGUAGE || 'en-US';
 
-const clampTitle = (s: string, max = 60): string =>
-  s.length <= max ? s : s.slice(0, max - 1).trimEnd() + '…';
-
 const clampDescription = (s: string, max = 160): string =>
   s.length <= max ? s : s.slice(0, max - 3).trimEnd() + '...';
-
-function getCategoryLabel(post: any): string {
-  if (post.category) {
-    const map: Record<string, string> = {
-      setup: 'Setup Guide',
-      review: 'Review',
-      sports: 'Live Sports',
-      tips: 'Tips & Tricks',
-      news: 'News',
-    };
-    return map[post.category] || post.category;
-  }
-  if (post.keywords && post.keywords.length > 0) return post.keywords[0];
-  return `${FOCUS_KEYWORD} Guide`;
-}
-
-function getReadTime(post: any): number {
-  if (post.readTime) {
-    const match = String(post.readTime).match(/(\d+)/);
-    if (match) return parseInt(match[1]);
-  }
-  const words = (post.content || '')
-    .replace(/<[^>]*>/g, '')
-    .split(/\s+/)
-    .filter(Boolean).length;
-  return Math.max(3, Math.ceil(words / 200));
-}
 
 function formatDate(dateStr: string): string {
   try {
@@ -75,18 +51,29 @@ function formatDate(dateStr: string): string {
   }
 }
 
+// Article body images are plain <img> tags in the post HTML; serve them through
+// the image optimizer (see optimizeArticleImages in lib/blog-helpers.ts).
+const ARTICLE_IMAGE_SIZES = '(max-width: 1024px) 100vw, 800px';
+
 function sanitizeContent(html: string): string {
-  return html
-    .replace(/<h1(\s[^>]*)?>/gi, '<h2$1>')
-    .replace(/<\/h1>/gi, '<\/h2>')
-    .replace(/<h2([^>]*)>(.*?faq.*?)<\/h2>/gi, '<h2 id="faq-section"$1>$2</h2>');
+  return optimizeArticleImages(
+    html
+      .replace(/<h1(\s[^>]*)?>/gi, '<h2$1>')
+      .replace(/<\/h1>/gi, '<\/h2>')
+      .replace(/<h2([^>]*)>(.*?faq.*?)<\/h2>/gi, '<h2 id="faq-section"$1>$2</h2>'),
+    ARTICLE_IMAGE_SIZES
+  );
 }
 
 function extractFAQs(html: string): { q: string; a: string }[] {
   const faqs: { q: string; a: string }[] = [];
 
+  // Matches the FAQ markup produced by buildFAQItem() in lib/blog.ts:
+  // <h3 class="faq-question">Q</h3> <p class="faq-answer">A</p>
+  // (The previous pattern expected a <span> inside the heading, never matched,
+  // and the loose fallback below then picked up ordinary article headings.)
   const cardRegex =
-    /<div class="faq-card[^"]*">\s*<h3[^>]*>[\s\S]*?<span>([\s\S]*?)<\/span>\s*<\/h3>\s*<p[^>]*>([\s\S]*?)<\/p>\s*<\/div>/gi;
+    /<h3 class="faq-question"[^>]*>([\s\S]*?)<\/h3>\s*<p class="faq-answer"[^>]*>([\s\S]*?)<\/p>/gi;
   let match;
   while ((match = cardRegex.exec(html)) !== null) {
     const q = match[1].replace(/<[^>]*>/g, '').trim();
@@ -114,7 +101,7 @@ function extractFAQs(html: string): { q: string; a: string }[] {
   return faqs.slice(0, 10);
 }
 
-function getRelatedPosts(currentPost: any, allPosts: any[], limit = 3): any[] {
+function getRelatedPosts(currentPost: BlogPost, allPosts: BlogPost[], limit = 3): BlogPost[] {
   const scored = allPosts
     .filter((p) => p.slug !== currentPost.slug)
     .map((p) => {
@@ -146,8 +133,6 @@ function extractHeadings(html: string): string[] {
   }
   return headings.slice(0, 8);
 }
-
-import { BlogPost } from '@/lib/blog';
 
 function extractQuickFacts(post: Partial<BlogPost>): { label: string; value: string }[] {
   const content = (post.content || '').toLowerCase();
@@ -203,9 +188,9 @@ export async function generateMetadata({ params }: Props) {
     };
   }
 
-  const shortTitle = clampTitle(
-    post.metatitle || post.title
-  );
+  // Use the authored meta title as written. Search engines truncate long titles
+  // by display width themselves; a hard cut here produced mid-word "…" titles.
+  const shortTitle = post.metatitle || post.title;
 
   const description = clampDescription(
     post.metadescription ||
@@ -246,7 +231,9 @@ export async function generateMetadata({ params }: Props) {
       publishedTime: post.date,
       modifiedTime: post.date,
       authors: [post.author],
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: post.title }],
+      // No width/height: cover images vary in size (960x768 up to 8064x5376),
+      // so the previously hard-coded 1200x630 was wrong for every post.
+      images: [{ url: imageUrl, alt: post.title }],
     },
     twitter: {
       card: 'summary_large_image',
@@ -277,8 +264,8 @@ export default async function BlogPostPage({ params }: Props) {
     notFound();
   }
 
-  const readTime = getReadTime(post);
-  const displayCategory = getCategoryLabel(post);
+  const readTime = getPostReadMinutes(post);
+  const displayCategory = getPostCategoryLabel(post, `${FOCUS_KEYWORD} Guide`);
   const dateStr = formatDate(post.date);
   const canonicalUrl = `${SITE_URL}/blog/${post.slug}`;
 
@@ -309,7 +296,7 @@ export default async function BlogPostPage({ params }: Props) {
   const orgId = `${SITE_URL}/#organization`;
   const websiteId = `${SITE_URL}/#website`;
 
-  const jsonLdGraph: any = {
+  const jsonLdGraph: { '@context': string; '@graph': Record<string, unknown>[] } = {
     '@context': 'https://schema.org',
     '@graph': [
       {
@@ -343,8 +330,7 @@ export default async function BlogPostPage({ params }: Props) {
           '@id': `${canonicalUrl}/#primaryimage`,
           url: schemaImageUrl,
           contentUrl: schemaImageUrl,
-          width: 1200,
-          height: 630,
+          // width/height omitted: covers vary in size, 1200x630 was not accurate.
           caption: post.title,
           representativeOfPage: true,
         },
@@ -447,7 +433,7 @@ export default async function BlogPostPage({ params }: Props) {
 
           <div className="absolute inset-0 z-0">
             <img
-              src={imageSrc}
+              {...blogImageProps(imageSrc, '100vw')}
               alt={post.title}
               fetchPriority="high"
               loading="eager"
@@ -494,6 +480,7 @@ export default async function BlogPostPage({ params }: Props) {
                 <img
                   src="/img/profile.webp"
                   alt={post.author}
+                  fetchPriority="low"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
@@ -543,7 +530,7 @@ export default async function BlogPostPage({ params }: Props) {
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-8">
         <Link
           href="/blog"
-          className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest group cursor-pointer"
+          className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest group cursor-pointer py-2 -my-2"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           Back to all articles
@@ -628,6 +615,7 @@ export default async function BlogPostPage({ params }: Props) {
                   <img
                     src="/img/profile.webp"
                     alt={`${post.author} - ${FOCUS_KEYWORD} Specialist`}
+                    loading="lazy"
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                 </div>

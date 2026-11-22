@@ -1,6 +1,7 @@
 // app/reseller/layout.tsx
 import type { Metadata } from 'next';
 import { CONSTANTS } from '@/lib/seo';
+import { resellerFaqs } from '@/lib/page-faqs';
 
 // SEO CONSTANTS
 const SITE_URL = CONSTANTS.SITE_URL;
@@ -70,9 +71,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: `${SITE_URL}/img/blog/article-reseller/cover.webp`,
-        width: 1200,
-        height: 630,
+        ...CONSTANTS.OG_IMAGE,
         alt: `${BRAND} IPTV Reseller Program ${YEAR}`,
       },
     ],
@@ -81,7 +80,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: PAGE_TITLE,
     description: PAGE_DESCRIPTION,
-    images: [`${SITE_URL}/img/blog/article-reseller/cover.webp`],
+    images: [CONSTANTS.OG_IMAGE.url],
   },
   robots: {
     index: true,
@@ -125,10 +124,10 @@ const ResellerSchema = () => {
       {
         '@type': 'ImageObject',
         '@id': `${PAGE_URL}/#primaryimage`,
-        url: `${SITE_URL}/img/blog/article-reseller/cover.webp`,
-        contentUrl: `${SITE_URL}/img/blog/article-reseller/cover.webp`,
-        width: 1200,
-        height: 630,
+        url: CONSTANTS.OG_IMAGE.url,
+        contentUrl: CONSTANTS.OG_IMAGE.url,
+        width: CONSTANTS.OG_IMAGE.width,
+        height: CONSTANTS.OG_IMAGE.height,
         caption: `${BRAND} IPTV Reseller Program ${YEAR}`,
       },
 
@@ -220,48 +219,12 @@ const ResellerSchema = () => {
       {
         '@type': 'FAQPage',
         '@id': `${PAGE_URL}/#faq`,
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'What exactly is an IPTV reseller panel?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `A reseller panel is a private dashboard that lets you create and manage IPTV subscriptions for your own customers. You buy credits from ${BRAND} in bulk, then use those credits to activate yearly, monthly, or trial subscriptions for anyone you sell to.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'How much can I realistically earn as an IPTV reseller?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Customers typically pay between $60 and $120 per year. Your wholesale cost starts around $30 per credit, so your profit per sale ranges from $30 to $90. Sell 10 subscriptions at $90 and you have earned roughly $600 profit from a $299 investment.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Do I need technical skills to become a reseller?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'No. The reseller panel is designed to be simple. If you can use WhatsApp and a web browser, you can run a reseller business. We provide onboarding guidance over WhatsApp any time you get stuck.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Do the reseller credits expire?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'No. Your credits stay in your account indefinitely. There is no expiration date, no monthly minimum, and no pressure to sell quickly.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Which currencies can I sell in?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'You can sell to your customers in any currency you prefer. Your wholesale cost with us is fixed in USD. Your retail price is completely up to you, so you control your margin.',
-            },
-          },
-        ],
+        // Built from the same list the page renders (lib/page-faqs.ts).
+        mainEntity: resellerFaqs.map((faq) => ({
+          '@type': 'Question',
+          name: faq.q,
+          acceptedAnswer: { '@type': 'Answer', text: faq.a },
+        })),
       },
     ],
   };
@@ -287,7 +250,8 @@ export default function ResellerLayout({
   return (
     <div className="w-full overflow-x-hidden min-h-screen flex flex-col bg-[#09090B] text-[#F8FAFC]">
       <ResellerSchema />
-      <main className="flex-grow w-full">{children}</main>
+      {/* div, not <main>: the root layout already provides the single <main> landmark */}
+      <div className="flex-grow w-full">{children}</div>
     </div>
   );
 }

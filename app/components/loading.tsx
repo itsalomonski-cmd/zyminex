@@ -1,54 +1,33 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useRef, useState, Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
-function LoaderContent() {
+// ---------------------------------------------------------------------------
+// ROUTE PROGRESS BAR
+// Non-blocking navigation indicator. It never covers page content and is not
+// rendered on the initial page load, so it cannot delay FCP/LCP.
+//
+// Visibility is derived (no setState inside effects): when an internal link is
+// clicked we remember the route we are leaving; the bar is shown only while the
+// current route still equals that remembered route. As soon as the URL changes
+// the condition becomes false and the bar disappears.
+// ---------------------------------------------------------------------------
+const SAFETY_RESET_MS = 10000;
+
+function ProgressBarContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(true);
-  const [hasMounted, setHasMounted] = useState(false);
-  const [visible, setVisible] = useState(true); // for fade-out
+  const routeKey = `${pathname}?${searchParams.toString()}`;
 
-  // 1. Initial page load
+  const [pendingFrom, setPendingFrom] = useState<string | null>(null);
+  const routeKeyRef = useRef(routeKey);
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
-    setHasMounted(true);
+    routeKeyRef.current = routeKey;
+  }, [routeKey]);
 
-    const finishLoading = () => {
-      setTimeout(() => {
-        setVisible(false);
-        setTimeout(() => setLoading(false), 400); // wait for fade-out
-      }, 400);
-    };
-
-    if (document.readyState === 'complete') {
-      finishLoading();
-    } else {
-      window.addEventListener('load', finishLoading);
-      const fallback = setTimeout(finishLoading, 2500);
-      return () => {
-        window.removeEventListener('load', finishLoading);
-        clearTimeout(fallback);
-      };
-    }
-  }, []);
-
-  // 2. Route change
-  useEffect(() => {
-    if (!hasMounted) return;
-
-    setLoading(true);
-    setVisible(true);
-
-    const timer = setTimeout(() => {
-      setVisible(false);
-      setTimeout(() => setLoading(false), 400);
-    }, 600);
-
-    return () => clearTimeout(timer);
-  }, [pathname, searchParams, hasMounted]);
-
-  // 3. Click interception
   useEffect(() => {
     const handleAnchorClick = (event: MouseEvent) => {
       if (
@@ -72,77 +51,48 @@ function LoaderContent() {
       if (
         href &&
         href.startsWith('/') &&
+        !href.startsWith('//') &&
         !href.startsWith('/#') &&
         targetAttr !== '_blank' &&
         downloadAttr === null &&
-        href !== pathname
+        href.split('#')[0] !== window.location.pathname + window.location.search
       ) {
-        setLoading(true);
-        setVisible(true);
+        setPendingFrom(routeKeyRef.current);
+
+        // Safety net in case the navigation is cancelled or fails.
+        if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+        resetTimerRef.current = setTimeout(() => setPendingFrom(null), SAFETY_RESET_MS);
       }
     };
 
     document.addEventListener('click', handleAnchorClick);
-    return () => document.removeEventListener('click', handleAnchorClick);
-  }, [pathname]);
+    return () => {
+      document.removeEventListener('click', handleAnchorClick);
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    };
+  }, []);
 
-  if (!loading) return null;
+  // Navigation finished: clear the pending marker so returning to the original
+  // route later (e.g. browser Back) does not show the bar again.
+  if (pendingFrom !== null && pendingFrom !== routeKey) {
+    setPendingFrom(null);
+  }
+
+  const isNavigating = pendingFrom !== null && pendingFrom === routeKey;
+  if (!isNavigating) return null;
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#09090B] transition-opacity duration-300 ${
-        visible ? 'opacity-100' : 'opacity-0'
-      }`}
-      aria-label="Loading"
-      aria-live="polite"
+      className="fixed top-0 left-0 right-0 z-[9999] h-1 overflow-hidden bg-[#18181B] pointer-events-none"
       role="status"
+      aria-label="Loading"
     >
-      {/* Background square-grid pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage:
-            'linear-gradient(to right, #F8FAFC 1px, transparent 1px), linear-gradient(to bottom, #F8FAFC 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
-        }}
-        aria-hidden="true"
-      />
+      <div className="h-full w-1/3 rounded-full bg-gradient-to-r from-[#008000] via-[#39FF14] to-[#FFD700] shadow-[0_0_12px_rgba(57,255,20,0.5)] animate-[loaderSlide_1.4s_ease-in-out_infinite] motion-reduce:animate-none" />
 
-      {/* Neon glow behind image */}
-      <div className="absolute w-[400px] h-[400px] bg-[#39FF14]/10 blur-[120px] rounded-full pointer-events-none" />
-
-      {/* Hero Image */}
-      <div className="relative z-10 w-[220px] sm:w-[280px] md:w-[340px] animate-[loaderFloat_2.4s_ease-in-out_infinite]">
-        <img
-          src="/img/hero.png"
-          alt="Zyminex loading"
-          width={400}
-          height={400}
-          fetchPriority="high"
-          loading="eager"
-          className="w-full h-auto object-contain"
-        />
-      </div>
-
-      {/* Loading bar */}
-      <div className="relative z-10 mt-10 w-[180px] h-1.5 rounded-full overflow-hidden bg-[#18181B]">
-        <div className="h-full w-1/2 rounded-full bg-gradient-to-r from-[#008000] via-[#39FF14] to-[#FFD700] animate-[loaderSlide_1.4s_ease-in-out_infinite]" />
-      </div>
-
-      {/* Text */}
-      <p className="relative z-10 mt-5 text-[11px] font-black uppercase tracking-[0.3em] text-[#94A3B8]">
-        Loading
-      </p>
-
-      {/* Keyframes */}
       <style>{`
-        @keyframes loaderFloat {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
         @keyframes loaderSlide {
-          0% { transform: translateX(-150%); }
-          100% { transform: translateX(350%); }
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(300%); }
         }
       `}</style>
     </div>
@@ -152,7 +102,7 @@ function LoaderContent() {
 export default function RouteLoader() {
   return (
     <Suspense fallback={null}>
-      <LoaderContent />
+      <ProgressBarContent />
     </Suspense>
   );
 }

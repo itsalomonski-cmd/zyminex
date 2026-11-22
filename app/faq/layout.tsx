@@ -58,9 +58,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: `${SITE_URL}/img/structer.webp`,
-        width: 1200,
-        height: 630,
+        ...CONSTANTS.OG_IMAGE,
         alt: `${BRAND} FAQ - Help Center and Answers`,
       },
     ],
@@ -69,7 +67,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: PAGE_TITLE,
     description: PAGE_DESCRIPTION,
-    images: [`${SITE_URL}/img/structer.webp`],
+    images: [CONSTANTS.OG_IMAGE.url],
   },
   robots: {
     index: true,

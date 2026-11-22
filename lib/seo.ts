@@ -26,6 +26,24 @@ const TARGET_LOCALES = [
 // Stable Organization @id used to link brand entities across JSON-LD blocks
 const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
+// Social-share and brand images that actually exist in /public, with their real
+// pixel dimensions. Use these instead of hard-coding image paths in metadata or
+// JSON-LD. OG_IMAGE is the dedicated 1200x630 (1.91:1) share image built from
+// the existing logo; the previous square /img/og-image.png (1254x1254) is kept
+// in /public unchanged.
+const OG_IMAGE = {
+  url: `${SITE_URL}/img/og-image-1200x630.jpg`,
+  width: 1200,
+  height: 630,
+  type: 'image/jpeg',
+} as const;
+
+const LOGO_IMAGE = {
+  url: `${SITE_URL}/img/zyminex-logo.png`,
+  width: 690,
+  height: 150,
+} as const;
+
 // ---------------------------------------------------------------------------
 // EXPORTED CONSTANTS
 // ---------------------------------------------------------------------------
@@ -44,6 +62,8 @@ export const CONSTANTS = {
   ADDRESS_COUNTRY,
   CURRENCY,
   ORGANIZATION_ID,
+  OG_IMAGE,
+  LOGO_IMAGE,
 
   // Locale map
   TARGET_LOCALES,
@@ -75,18 +95,23 @@ export const CONSTANTS = {
   // Business Contact Details
   CONTACT: {
     email: 'support@zyminex.plus',
-    phone: '+1 555 000 0000', // ⚠️ Replace with your real number
-    whatsapp: '+1 555 000 0000', // ⚠️ Replace with your real WhatsApp number
+    // Left empty until the owner provides a real number (the previous value was
+    // the fictional placeholder "+1 555 000 0000"). /support falls back to
+    // "Chat on WhatsApp" while this is empty.
+    phone: '', // ⚠️ Add your real number
+    whatsapp: '', // ⚠️ Add your real WhatsApp number
     whatsappUrl: 'https://support-tv.online', // ⚠️ Replace with your real wa.me link
     supportHours: '24/7 Customer Support via Email and Live Chat',
   },
 
-  // Social Media (used in Footer / Header)
+  // Social Media (used in Footer). Left empty until the owner confirms real
+  // profiles; the footer only renders icons for non-empty URLs. The previous
+  // values (twitter.com/zyminex etc.) were unverified placeholders.
   SOCIALS: {
-    twitter: 'https://twitter.com/zyminex', // ⚠️ Replace
-    instagram: 'https://instagram.com/zyminex', // ⚠️ Replace
-    facebook: 'https://facebook.com/zyminex', // ⚠️ Replace
-  },
+    twitter: '', // ⚠️ Add your real profile URL
+    instagram: '', // ⚠️ Add your real profile URL
+    facebook: '', // ⚠️ Add your real profile URL
+  } as { twitter: string; instagram: string; facebook: string },
 
   // Payment Methods (used in Footer / Pricing badges)
   PAYMENT_METHODS: [
@@ -120,6 +145,16 @@ export const CONSTANTS = {
 };
 
 // ---------------------------------------------------------------------------
+// FREE-TRIAL CTA DESTINATION
+// The free 24-hour trial is requested over WhatsApp everywhere on the site
+// (pricing, setup, channel pages, FAQ). This is the same message the pricing
+// section's "free trial" button sends. There is no /free-trial page.
+// ---------------------------------------------------------------------------
+export const FREE_TRIAL_WHATSAPP_URL = `${CONSTANTS.CONTACT.whatsappUrl}?text=${encodeURIComponent(
+  "Hi! I'd like to try the free 24-hour trial."
+)}`;
+
+// ---------------------------------------------------------------------------
 // SEO METADATA GENERATOR
 // ---------------------------------------------------------------------------
 export const generateSEOMetadata = (
@@ -132,10 +167,17 @@ export const generateSEOMetadata = (
     description ||
     `Looking for a reliable IPTV Provider? Zyminex delivers premium IPTV Subscription plans with 4K streaming across the United States. Start your free trial today!`;
 
-  // Enforces strict 50-60 character count for meta titles
-  const defaultTitle = `${pageName} | ${BRAND_NAME} - Premium IPTV Provider`;
-  const formattedTitle =
-    defaultTitle.length > 60 ? defaultTitle.substring(0, 60) : defaultTitle;
+  // Title: "{Page} | Zyminex - Premium IPTV Provider" when it fits in 60 chars,
+  // otherwise "{Page} | Zyminex"; a page name that already contains the brand
+  // is used as-is. Returned as an *absolute* title so the root layout's
+  // "%s | Zyminex" template is not appended a second time, and never cut
+  // mid-word.
+  const longTitle = `${pageName} | ${BRAND_NAME} - Premium IPTV Provider`;
+  const formattedTitle = pageName.includes(BRAND_NAME)
+    ? pageName
+    : longTitle.length <= 60
+      ? longTitle
+      : `${pageName} | ${BRAND_NAME}`;
 
   const fullCanonicalUrl =
     path === '/'
@@ -143,7 +185,7 @@ export const generateSEOMetadata = (
       : `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 
   return {
-    title: formattedTitle,
+    title: { absolute: formattedTitle },
     description: defaultDescription,
     keywords: [
       ...CONSTANTS.PRIMARY_KEYWORDS,
@@ -164,20 +206,13 @@ export const generateSEOMetadata = (
       siteName: BRAND_NAME,
       locale: LOCALE,
       type: 'website',
-      images: [
-        {
-          url: `${SITE_URL}/img/og-image.webp`,
-          width: 1200,
-          height: 630,
-          alt: `${BRAND_NAME} - ${FOCUS_KEYWORD}`,
-        },
-      ],
+      images: [{ ...OG_IMAGE, alt: `${BRAND_NAME} - ${FOCUS_KEYWORD}` }],
     },
     twitter: {
       card: 'summary_large_image',
       title: formattedTitle,
       description: defaultDescription,
-      images: [`${SITE_URL}/img/og-image.webp`],
+      images: [OG_IMAGE.url],
     },
     robots: {
       index: true,
@@ -200,152 +235,5 @@ export const generateSEOMetadata = (
       address: false,
       telephone: false,
     },
-  };
-};
-
-// ---------------------------------------------------------------------------
-// JSON-LD SCHEMA GENERATOR — Organization
-// ---------------------------------------------------------------------------
-export const generateOrganizationSchema = () => {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    '@id': ORGANIZATION_ID,
-    name: BRAND_NAME,
-    url: SITE_URL,
-    logo: `${SITE_URL}/img/iptv-logo.webp`,
-    description:
-      'Zyminex is a premium IPTV Provider delivering high-definition live television, local broadcasts, premium IPTV Subscription plans, and 4K sports streaming across the United States.',
-    address: {
-      '@type': 'PostalAddress',
-      addressCountry: ADDRESS_COUNTRY,
-    },
-    contactPoint: {
-      '@type': 'ContactPoint',
-      email: CONSTANTS.CONTACT.email,
-      telephone: CONSTANTS.CONTACT.phone,
-      contactType: 'customer support',
-      areaServed: ['US'],
-      availableLanguage: ['English'],
-    },
-    sameAs: [
-      CONSTANTS.SOCIALS.twitter,
-      CONSTANTS.SOCIALS.instagram,
-      CONSTANTS.SOCIALS.facebook,
-    ],
-  };
-};
-
-// ---------------------------------------------------------------------------
-// JSON-LD SCHEMA GENERATOR — Product / Offer
-// NOTE: Reserve strictly for sales or reseller pages. Do NOT use on /setup
-// or other informational/guide pages.
-// ---------------------------------------------------------------------------
-export const generateProductSchema = (
-  name: string,
-  price: string,
-  currency: string = CURRENCY,
-  description: string
-) => {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: name,
-    description: description,
-    brand: {
-      '@type': 'Brand',
-      name: BRAND_NAME,
-    },
-    offers: {
-      '@type': 'Offer',
-      price: price,
-      priceCurrency: currency,
-      availability: 'https://schema.org/InStock',
-      url: `${SITE_URL}/pricing`,
-      seller: {
-        '@id': ORGANIZATION_ID,
-      },
-      areaServed: [{ '@type': 'Country', name: 'United States' }],
-    },
-  };
-};
-
-// ---------------------------------------------------------------------------
-// JSON-LD SCHEMA GENERATOR — LocalBusiness (US Cities)
-// ---------------------------------------------------------------------------
-export const generateLocalBusinessSchema = () => {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
-    '@id': `${SITE_URL}/#localbusiness`,
-    name: BRAND_NAME,
-    url: SITE_URL,
-    image: `${SITE_URL}/img/og-image.webp`,
-    description:
-      'Zyminex IPTV Subscription service offering 4K live TV, sports, and VOD streaming to households across New York, Los Angeles, Chicago, and major cities throughout the United States.',
-    priceRange: '$$',
-    telephone: CONSTANTS.CONTACT.phone,
-    email: CONSTANTS.CONTACT.email,
-    address: {
-      '@type': 'PostalAddress',
-      addressCountry: ADDRESS_COUNTRY,
-    },
-    areaServed: CONSTANTS.TARGET_REGIONS.map((city) => ({
-      '@type': 'City',
-      name: city,
-    })),
-    openingHoursSpecification: {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: [
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        'Sunday',
-      ],
-      opens: '00:00',
-      closes: '23:59',
-    },
-    parentOrganization: {
-      '@id': ORGANIZATION_ID,
-    },
-  };
-};
-
-// ---------------------------------------------------------------------------
-// JSON-LD SCHEMA GENERATOR — FAQPage
-// ---------------------------------------------------------------------------
-export const generateFAQSchema = (faqs: { q: string; a: string }[]) => {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map((faq) => ({
-      '@type': 'Question',
-      name: faq.q,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: faq.a,
-      },
-    })),
-  };
-};
-
-// ---------------------------------------------------------------------------
-// JSON-LD SCHEMA GENERATOR — BreadcrumbList
-// ---------------------------------------------------------------------------
-export const generateBreadcrumbSchema = (
-  items: { name: string; url: string }[]
-) => {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: item.name,
-      item: item.url.startsWith('http') ? item.url : `${SITE_URL}${item.url}`,
-    })),
   };
 };

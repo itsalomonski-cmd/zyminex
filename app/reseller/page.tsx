@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { CONSTANTS } from '@/lib/seo';
+import { resellerFaqs } from '@/lib/page-faqs';
 import {
   ArrowRight,
   BadgeDollarSign,
@@ -28,9 +29,7 @@ import {
 } from 'lucide-react';
 import { FadeIn, FadeInStagger, FadeInItem } from '../components/AnimatedSection';
 
-const SITE_URL = `https://${CONSTANTS.DOMAIN}`;
 const BRAND = CONSTANTS.BRAND_NAME;
-const FOCUS_KEYWORD = CONSTANTS.FOCUS_KEYWORD;
 const YEAR = new Date().getFullYear();
 
 // ===========================================================================
@@ -144,32 +143,8 @@ const tiers: PricingTier[] = [
 // ===========================================================================
 // FAQS
 // ===========================================================================
-const faqs = [
-  {
-    q: 'What exactly is an IPTV reseller panel?',
-    a: `A reseller panel is a private dashboard that lets you create and manage IPTV subscriptions for your own customers. You buy credits from ${BRAND} in bulk, then use those credits to activate yearly, monthly, or trial subscriptions for anyone you sell to. You keep the full retail price minus your wholesale cost, and your customers never see the brand behind the scenes.`,
-  },
-  {
-    q: 'How much can I realistically earn as an IPTV reseller?',
-    a: `It depends on how many customers you bring in. Customers typically pay between $60 and $120 per year, with $90 being the average. Your wholesale cost per credit starts around $30 per year, so your profit per sale ranges from $30 to $90 depending on your selling price. Sell 10 subscriptions at $90 and you have earned roughly $600 in profit from a $299 investment.`,
-  },
-  {
-    q: 'Do I need technical skills to become a reseller?',
-    a: 'No. The reseller panel is designed to be simple. If you can use WhatsApp and a web browser, you can run a reseller business. We also provide onboarding guidance over WhatsApp, so any time you get stuck, our team walks you through it directly.',
-  },
-  {
-    q: 'Do the reseller credits expire?',
-    a: 'No. Your credits stay in your account indefinitely. You can activate them at your own pace, whether that means selling several subscriptions in a week or spreading them across months. There is no monthly minimum, no expiration date, and no pressure to sell quickly.',
-  },
-  {
-    q: 'Which currencies can I sell in?',
-    a: `You can sell to your customers in any currency you prefer. US dollars, British pounds, Australian dollars, or anything else. Your wholesale cost with us is fixed in USD. Your retail price is completely up to you, so you control your margin. Use the currency toggle at the top of the pricing section to see all prices in USD, GBP, or AUD.`,
-  },
-  {
-    q: 'What kind of support do I get as a reseller?',
-    a: `Every reseller, regardless of tier, gets direct WhatsApp support from our team. The Growth plan adds priority response times, and the Pro plan includes a dedicated support channel plus white label setup assistance.`,
-  },
-];
+// FAQ content lives in lib/page-faqs.ts (shared with the FAQPage JSON-LD).
+const faqs = resellerFaqs;
 
 // ===========================================================================
 // STEPS
@@ -400,30 +375,47 @@ function FaqItem({ faq, index }: { faq: { q: string; a: string }; index: number 
           : 'border-[#27272A] hover:border-[#39FF14]/60'
       } bg-[#18181B]`}
     >
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full text-left p-6 md:p-7 flex items-start gap-5 cursor-pointer"
-        aria-expanded={isOpen}
-      >
-        <div className="shrink-0 w-14 h-14 rounded-2xl bg-[#27272A] flex items-center justify-center text-[#39FF14] font-black text-lg shadow-lg">
+      {/* Accessible accordion with an unchanged layout: the heading contains a
+          real button for the question; its ::after overlay stretches over the
+          whole card so clicking anywhere still toggles. The answer is no longer
+          inside the button (it used to become part of the button's name). */}
+      <div className="w-full text-left p-6 md:p-7 flex items-start gap-5">
+        <div
+          aria-hidden="true"
+          className="shrink-0 w-14 h-14 rounded-2xl bg-[#27272A] flex items-center justify-center text-[#39FF14] font-black text-lg shadow-lg"
+        >
           {num}
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-black text-[#F8FAFC] text-base md:text-lg uppercase tracking-tight leading-snug mb-1">
-            {faq.q}
+            <button
+              type="button"
+              id={`reseller-faq-q-${index}`}
+              onClick={() => setIsOpen(!isOpen)}
+              aria-expanded={isOpen}
+              aria-controls={`reseller-faq-a-${index}`}
+              className="text-left uppercase cursor-pointer after:absolute after:inset-0"
+            >
+              {faq.q}
+            </button>
           </h3>
-          {isOpen && (
-            <p className="text-[#94A3B8] font-medium leading-relaxed text-sm md:text-base mt-3 pl-4 border-l-4 border-[#39FF14]">
-              {faq.a}
-            </p>
-          )}
+          {/* Always rendered (hidden while closed) so the answer is present in
+              the server HTML for crawlers. Visually identical. */}
+          <p
+            id={`reseller-faq-a-${index}`}
+            hidden={!isOpen}
+            className="text-[#94A3B8] font-medium leading-relaxed text-sm md:text-base mt-3 pl-4 border-l-4 border-[#39FF14]"
+          >
+            {faq.a}
+          </p>
         </div>
         <ChevronDown
+          aria-hidden="true"
           className={`shrink-0 w-5 h-5 text-[#39FF14] transition-transform duration-300 mt-4 ${
             isOpen ? 'rotate-180' : ''
           }`}
         />
-      </button>
+      </div>
     </div>
   );
 }

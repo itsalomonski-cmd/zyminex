@@ -130,7 +130,9 @@ const SPORTS_ALTS = [
 // ---------------------------------------------------------------------------
 // DATA ARRAYS
 // ---------------------------------------------------------------------------
-const movies = Array.from({ length: MOVIES_COUNT }).map((_, i) => {
+type SliderItem = { id: string; imagePath: string; alt: string };
+
+const movies: SliderItem[] = Array.from({ length: MOVIES_COUNT }).map((_, i) => {
   const number = String(i + 1).padStart(2, '0');
   return {
     id: `movie-${i}`,
@@ -139,7 +141,7 @@ const movies = Array.from({ length: MOVIES_COUNT }).map((_, i) => {
   };
 });
 
-const series = Array.from({ length: SERIES_COUNT }).map((_, i) => {
+const series: SliderItem[] = Array.from({ length: SERIES_COUNT }).map((_, i) => {
   const number = String(i + 1).padStart(2, '0');
   return {
     id: `series-${i}`,
@@ -148,7 +150,7 @@ const series = Array.from({ length: SERIES_COUNT }).map((_, i) => {
   };
 });
 
-const sports = Array.from({ length: SPORTS_COUNT }).map((_, i) => {
+const sports: SliderItem[] = Array.from({ length: SPORTS_COUNT }).map((_, i) => {
   const number = String(i + 1).padStart(2, '0');
   return {
     id: `sport-${i}`,
@@ -174,7 +176,7 @@ const InfiniteSlider = ({
   fadeBgColor = '#09090B',
   cardBorderColor = 'rgba(255,255,255,0.08)',
 }: {
-  items: any[];
+  items: SliderItem[];
   direction?: 'left' | 'right';
   speed?: number;
   fadeBgColor?: string;
@@ -203,9 +205,6 @@ const InfiniteSlider = ({
       >
         {infiniteItems.map((item, idx) => {
           const key = `${item.id}-${idx}`;
-          const isFirstHalf = idx < items.length;
-          const isPriority = isFirstHalf && idx < 6;
-
           const isDuplicate = idx >= items.length;
           const altText = isDuplicate ? '' : item.alt;
 
@@ -228,7 +227,9 @@ const InfiniteSlider = ({
                     width={208}
                     height={312}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading={isPriority ? "eager" : "lazy"}
+                    // The slider always sits below the hero, so no poster is
+                    // above the fold; lazy-load all of them.
+                    loading="lazy"
                     sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, (max-width: 1024px) 192px, 208px"                    onError={() =>
                       setFailedImages((prev) => ({ ...prev, [key]: true }))
                     }

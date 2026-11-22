@@ -18,8 +18,19 @@ import {
   AlertCircle,
   Sparkles,
   MessageCircle,
+  type LucideIcon,
 } from 'lucide-react';
 import ShareButtons from '../components/ShareButtons';
+
+type FaqCategoryFilter = 'all' | 'general' | 'sports' | 'devices' | 'billing';
+
+const FAQ_TABS: { id: FaqCategoryFilter; label: string; icon: LucideIcon }[] = [
+  { id: 'all', label: 'All Questions (24)', icon: HelpCircle },
+  { id: 'general', label: 'General & Service', icon: Tv },
+  { id: 'sports', label: 'Sport & Channels', icon: Zap },
+  { id: 'devices', label: 'Smart TV & Apps', icon: Smartphone },
+  { id: 'billing', label: 'Billing & Security', icon: CreditCard },
+];
 
 const SITE_URL = CONSTANTS.SITE_URL;
 const BRAND = CONSTANTS.BRAND_NAME;
@@ -75,7 +86,7 @@ const faqList: FAQItem[] = [
 // ---------------------------------------------------------------------------
 export default function FAQPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<'all' | 'general' | 'sports' | 'devices' | 'billing'>('all');
+  const [activeCategory, setActiveCategory] = useState<FaqCategoryFilter>('all');
   const [openAccordion, setOpenAccordion] = useState<string | null>('gen-1');
 
   const whatsappBaseUrl = CONSTANTS.CONTACT.whatsappUrl;
@@ -131,9 +142,9 @@ export default function FAQPage() {
         inLanguage: 'en-US',
         primaryImageOfPage: {
           '@type': 'ImageObject',
-          url: `${SITE_URL}/img/structer.webp`,
-          width: '1200',
-          height: '630',
+          url: CONSTANTS.OG_IMAGE.url,
+          width: CONSTANTS.OG_IMAGE.width,
+          height: CONSTANTS.OG_IMAGE.height,
         },
         breadcrumb: { '@id': `${PAGE_URL}/#breadcrumb` },
       },
@@ -193,6 +204,7 @@ export default function FAQPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search frequently asked questions"
                 placeholder="Search a question (NFL, IPTV Smarters, PayPal, buffering)..."
                 className="w-full pl-12 pr-4 py-4 rounded-full bg-[#18181B] text-[#F8FAFC] placeholder-[#94A3B8]/50 font-bold border-2 border-[#27272A] focus:border-[#39FF14] focus:outline-none shadow-2xl transition-all"
               />
@@ -208,19 +220,14 @@ export default function FAQPage() {
 
         {/* Category tabs */}
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-12">
-          {[
-            { id: 'all', label: 'All Questions (24)', icon: HelpCircle },
-            { id: 'general', label: 'General & Service', icon: Tv },
-            { id: 'sports', label: 'Sport & Channels', icon: Zap },
-            { id: 'devices', label: 'Smart TV & Apps', icon: Smartphone },
-            { id: 'billing', label: 'Billing & Security', icon: CreditCard },
-          ].map((tab) => {
+          {FAQ_TABS.map((tab) => {
             const Icon = tab.icon;
             const active = activeCategory === tab.id;
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveCategory(tab.id as any)}
+                onClick={() => setActiveCategory(tab.id)}
+                aria-pressed={active}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md border ${
                   active
                     ? 'bg-[#39FF14] text-[#09090B] border-[#39FF14] scale-105 shadow-lg shadow-[#39FF14]/30'
@@ -254,35 +261,45 @@ export default function FAQPage() {
                     }`}
                   />
 
-                  <button
-                    onClick={() => toggleAccordion(faq.id)}
-                    className="w-full text-left p-5 sm:p-6 flex items-start justify-between gap-4 cursor-pointer"
-                    aria-expanded={isOpen}
-                  >
-                    <div className="flex items-start gap-3 pr-2 flex-1">
+                  {/* Heading wraps the toggle (questions are h2: this list sits
+                      directly under the page h1). */}
+                  <h2>
+                    <button
+                      type="button"
+                      onClick={() => toggleAccordion(faq.id)}
+                      className="w-full text-left p-5 sm:p-6 flex items-start justify-between gap-4 cursor-pointer"
+                      aria-expanded={isOpen}
+                      aria-controls={`faq-a-${faq.id}`}
+                    >
+                      <span className="flex items-start gap-3 pr-2 flex-1">
+                        <span
+                          aria-hidden="true"
+                          className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
+                            isOpen ? 'bg-[#39FF14] text-[#09090B]' : 'bg-[#27272A] text-[#94A3B8]'
+                          }`}
+                        >
+                          <HelpCircle className="w-4 h-4" />
+                        </span>
+                        <span className="font-black text-[#F8FAFC] text-base sm:text-lg uppercase tracking-tight leading-snug">
+                          {faq.q}
+                        </span>
+                      </span>
                       <span
-                        className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
-                          isOpen ? 'bg-[#39FF14] text-[#09090B]' : 'bg-[#27272A] text-[#94A3B8]'
+                        aria-hidden="true"
+                        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
+                          isOpen
+                            ? 'rotate-180 bg-[#39FF14] text-[#09090B]'
+                            : 'bg-[#27272A] text-[#94A3B8] group-hover:bg-[#39FF14]/10 group-hover:text-[#39FF14]'
                         }`}
                       >
-                        <HelpCircle className="w-4 h-4" />
+                        <ChevronDown className="w-4 h-4" />
                       </span>
-                      <span className="font-black text-[#F8FAFC] text-base sm:text-lg uppercase tracking-tight leading-snug">
-                        {faq.q}
-                      </span>
-                    </div>
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
-                        isOpen
-                          ? 'rotate-180 bg-[#39FF14] text-[#09090B]'
-                          : 'bg-[#27272A] text-[#94A3B8] group-hover:bg-[#39FF14]/10 group-hover:text-[#39FF14]'
-                      }`}
-                    >
-                      <ChevronDown className="w-4 h-4" />
-                    </div>
-                  </button>
+                    </button>
+                  </h2>
 
                   <div
+                    id={`faq-a-${faq.id}`}
+                    aria-hidden={!isOpen}
                     className={`grid transition-all duration-300 ease-in-out ${
                       isOpen ? 'grid-rows-[1fr] opacity-100 pb-6' : 'grid-rows-[0fr] opacity-0 pb-0'
                     }`}
@@ -473,7 +490,7 @@ export default function FAQPage() {
         <div className="mt-12 text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest cursor-pointer"
+            className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest cursor-pointer py-2 -my-2"
           >
             ← Back to homepage
           </Link>

@@ -391,7 +391,7 @@ export default function PrivacyPage() {
         <div className="mt-16 pt-8 border-t border-[#27272A] text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest"
+            className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest py-2 -my-2"
           >
             ← Back to homepage
           </Link>

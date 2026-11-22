@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { FadeIn, FadeInStagger, FadeInItem } from '../components/AnimatedSection';
 import { CONSTANTS } from '@/lib/seo';
 import {
@@ -134,6 +134,26 @@ const SuccessPopup = ({ onClose }: { onClose: () => void }) => {
 // ---------------------------------------------------------------------------
 // MAIN PAGE
 // ---------------------------------------------------------------------------
+// Visible FAQ list; also the single source for this page's FAQPage JSON-LD.
+const SUPPORT_FAQS = [
+  {
+    q: 'How do I contact support the fastest way?',
+    a: `For the fastest support, message us directly on WhatsApp. Our team typically replies within a few minutes.`,
+  },
+  {
+    q: 'Do you offer help with installation?',
+    a: `Yes. Our team guides you step by step through setting up ${BRAND} on Smart TV, Firestick, Android, and Apple TV, either manually or with remote activation on WhatsApp.`,
+  },
+  {
+    q: 'Can I request a free trial first?',
+    a: 'Absolutely. Request a free 24 hour IPTV trial via WhatsApp to try our 4K channels risk free before subscribing.',
+  },
+  {
+    q: 'How fast will I get set up?',
+    a: 'Once you confirm your plan and complete payment, our team sets you up live on WhatsApp. Most customers are streaming within 10 minutes.',
+  },
+];
+
 export default function SupportPage() {
   const [formData, setFormData] = useState({
     name: '',
@@ -142,10 +162,8 @@ export default function SupportPage() {
     message: '',
   });
 
-  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
 
   const whatsappBaseUrl = CONSTANTS.CONTACT.whatsappUrl;
 
@@ -156,26 +174,26 @@ export default function SupportPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // The WhatsApp tab must be opened synchronously inside the submit event:
+  // browsers block window.open() calls made after an await (no user gesture).
+  // Success is only reported when the tab actually opened; otherwise the form
+  // keeps the user's input so nothing typed is lost.
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+    const encodedMsg = encodeURIComponent(
+      `Hi ${BRAND},\n\nName: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject}\nMessage: ${formData.message}`
+    );
+    const opened = window.open(`${whatsappBaseUrl}?text=${encodedMsg}`, '_blank');
 
-      const encodedMsg = encodeURIComponent(
-        `Hi ${BRAND},\n\nName: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject}\nMessage: ${formData.message}`
-      );
-      window.open(`${whatsappBaseUrl}?text=${encodedMsg}`, '_blank');
-
-      setShowSuccessPopup(true);
-      setFormData({ name: '', email: '', subject: '', message: '' });
-      setToast({ message: 'Your message was sent successfully!', type: 'success' });
-    } catch {
+    if (!opened) {
       setToast({ message: 'Sending failed. Please try again via WhatsApp.', type: 'error' });
-    } finally {
-      setLoading(false);
+      return;
     }
+
+    setShowSuccessPopup(true);
+    setFormData({ name: '', email: '', subject: '', message: '' });
+    setToast({ message: 'Your message was sent successfully!', type: 'success' });
   };
 
   const startWhatsAppChat = () => {
@@ -209,40 +227,12 @@ export default function SupportPage() {
       {
         '@type': 'FAQPage',
         '@id': `${PAGE_URL}/#faq`,
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'How do I contact support the fastest way?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `For the fastest support, send a message on WhatsApp. Our team typically replies within a few minutes.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Do you offer help with installation?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `Yes. Our team guides you step by step through setting up ${BRAND} on Smart TV, Firestick, Android, and Apple TV, either manually or with remote activation on WhatsApp.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I request a free trial first?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Absolutely. Request a free 24 hour IPTV trial via WhatsApp to try our 4K channels risk free before subscribing.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'How fast will I get set up?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Once you confirm your plan and complete payment, our team sets you up live on WhatsApp. Most customers are streaming within 10 minutes.',
-            },
-          },
-        ],
+        // Built from the same list the page renders (SUPPORT_FAQS).
+        mainEntity: SUPPORT_FAQS.map((faq) => ({
+          '@type': 'Question',
+          name: faq.q,
+          acceptedAnswer: { '@type': 'Answer', text: faq.a },
+        })),
       },
     ],
   };
@@ -307,7 +297,7 @@ export default function SupportPage() {
                   Fill in the form below and we will reply via WhatsApp or email, usually within minutes.
                 </p>
 
-                <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-5">
                   <div>
                     <label
                       htmlFor="name"
@@ -422,43 +412,10 @@ export default function SupportPage() {
 
                   <button
                     type="submit"
-                    disabled={loading}
-                    className={`w-full py-4 rounded-xl bg-[#FFD700] text-[#09090B] font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3 border border-[#09090B]/20 ${
-                      loading
-                        ? 'opacity-70 cursor-not-allowed'
-                        : 'hover:scale-[1.01] hover:bg-[#E6C200] hover:shadow-xl cursor-pointer'
-                    }`}
+                    className="w-full py-4 rounded-xl bg-[#FFD700] text-[#09090B] font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3 border border-[#09090B]/20 hover:scale-[1.01] hover:bg-[#E6C200] hover:shadow-xl cursor-pointer"
                   >
-                    {loading ? (
-                      <>
-                        <svg
-                          className="animate-spin h-5 w-5 text-[#09090B]"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          />
-                        </svg>
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-5 h-5" />
-                        Send Message
-                      </>
-                    )}
+                    <Send className="w-5 h-5" />
+                    Send Message
                   </button>
                 </form>
               </div>
@@ -516,7 +473,7 @@ export default function SupportPage() {
                     <p className="text-[#F8FAFC] text-sm font-bold">Available 24/7</p>
                     <button
                       onClick={startWhatsAppChat}
-                      className="text-[#39FF14] text-xs font-black uppercase tracking-widest hover:text-[#F8FAFC] transition-colors mt-1 cursor-pointer block"
+                      className="text-[#39FF14] text-xs font-black uppercase tracking-widest hover:text-[#F8FAFC] transition-colors -mt-1 -mb-2 py-2 cursor-pointer block"
                     >
                       Start WhatsApp Chat →
                     </button>
@@ -631,24 +588,7 @@ export default function SupportPage() {
         </FadeIn>
 
         <FadeInStagger className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[
-            {
-              q: 'How do I contact support the fastest way?',
-              a: `For the fastest support, message us directly on WhatsApp. Our team typically replies within a few minutes.`,
-            },
-            {
-              q: 'Do you offer help with installation?',
-              a: `Yes. Our team guides you step by step through setting up ${BRAND} on Smart TV, Firestick, Android, and Apple TV, either manually or with remote activation on WhatsApp.`,
-            },
-            {
-              q: 'Can I request a free trial first?',
-              a: 'Absolutely. Request a free 24 hour IPTV trial via WhatsApp to try our 4K channels risk free before subscribing.',
-            },
-            {
-              q: 'How fast will I get set up?',
-              a: 'Once you confirm your plan and complete payment, our team sets you up live on WhatsApp. Most customers are streaming within 10 minutes.',
-            },
-          ].map((faq, idx) => (
+          {SUPPORT_FAQS.map((faq, idx) => (
             <FadeInItem
               key={idx}
               className="bg-[#18181B] border border-[#27272A] rounded-2xl p-6 shadow-xl transition-all hover:-translate-y-1 hover:border-[#39FF14] hover:shadow-[0_20px_50px_rgba(57,255,20,0.15)]"

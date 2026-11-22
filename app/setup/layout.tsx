@@ -1,6 +1,7 @@
 // app/setup/layout.tsx
 import type { Metadata } from 'next';
 import { CONSTANTS } from '@/lib/seo';
+import { setupFaqs } from '@/lib/page-faqs';
 
 // ---------------------------------------------------------------------------
 // SEO SAFETY HELPERS
@@ -71,9 +72,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: `${SITE_URL}/img/structer.webp`,
-        width: 1200,
-        height: 630,
+        ...CONSTANTS.OG_IMAGE,
         alt: `${BRAND} Setup Guide for Firestick, Smart TV and Mobile`,
       },
     ],
@@ -82,7 +81,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: PAGE_TITLE,
     description: PAGE_DESCRIPTION,
-    images: [`${SITE_URL}/img/structer.webp`],
+    images: [CONSTANTS.OG_IMAGE.url],
   },
   category: 'entertainment',
   keywords: [
@@ -127,9 +126,9 @@ const SetupPageSchema = () => {
         },
         image: {
           '@type': 'ImageObject',
-          url: `${SITE_URL}/img/structer.webp`,
-          width: 1200,
-          height: 630,
+          url: CONSTANTS.OG_IMAGE.url,
+          width: CONSTANTS.OG_IMAGE.width,
+          height: CONSTANTS.OG_IMAGE.height,
         },
         supply: [
           {
@@ -208,72 +207,12 @@ const SetupPageSchema = () => {
       {
         '@type': 'FAQPage',
         '@id': `${PAGE_URL}/#faq`,
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'How do I receive my login details after purchasing a plan?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Everything is handled live over WhatsApp. Once you confirm your plan and complete payment, our team sends your setup details directly in the chat, usually within minutes.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Which IPTV player do you recommend?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `We recommend IPTV Smarters Pro for the fastest channel zapping, lowest RAM usage, and best 4K performance across Firestick, Smart TVs, Apple devices, and PC or Mac. It is one of our top picks for smooth playback.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Do I need to activate IPTV Smarters Pro separately?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'The activation service is included free with every subscription. Choose Auto Setup where you send us your Device Key and we activate remotely, or Manual Setup where you enter M3U or Xtream Codes yourself.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'How long does the full setup take?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Most customers are streaming within 10 minutes. Installing IPTV Smarters Pro takes about 2 minutes, activation takes 1 to 2 minutes, and content loading takes 1 to 2 minutes.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I use my login credentials on multiple devices?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Yes, you can install the app on unlimited devices. The number of simultaneous streams depends on your plan, with 1 screen for Standard or 2 and 3 screens for Multi-room.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'What should I do if I get a login error in IPTV Smarters Pro?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Confirm you selected the Xtream Codes API method, not M3U, and that there are no extra spaces in your username or password. If it persists, message us on WhatsApp and most issues resolve within 2 minutes.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'What internet speed do I need for 4K streaming?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'For 4K Ultra HD we recommend 30 Mbps minimum. Full HD 1080p runs smoothly on 15 Mbps. Anti-freeze server technology adapts to your connection speed automatically.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'Do I need a VPN to use your service?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'No, our global servers are optimized and secure. If your internet provider applies streaming throttling during peak hours, you can enable a VPN without issues.',
-            },
-          },
-        ],
+        // Built from the same list the page renders (lib/page-faqs.ts).
+        mainEntity: setupFaqs.map((faq) => ({
+          '@type': 'Question',
+          name: faq.q,
+          acceptedAnswer: { '@type': 'Answer', text: faq.a },
+        })),
       },
 
       // BREADCRUMBS
@@ -319,7 +258,8 @@ export default function SetupLayout({
   return (
     <div className="w-full overflow-x-hidden min-h-screen flex flex-col bg-[#09090B] text-[#F8FAFC]">
       <SetupPageSchema />
-      <main className="flex-grow w-full">{children}</main>
+      {/* div, not <main>: the root layout already provides the single <main> landmark */}
+      <div className="flex-grow w-full">{children}</div>
     </div>
   );
 }

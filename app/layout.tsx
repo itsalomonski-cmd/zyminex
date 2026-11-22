@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import { CONSTANTS } from '@/lib/seo';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import Loading from './components/loading';
+import MotionProvider from './components/MotionProvider';
 
 
 // ---------------------------------------------------------------------------
@@ -36,15 +37,13 @@ const montserrat = Montserrat({
 const SITE_URL = `https://${CONSTANTS.DOMAIN}`;
 
 // ---------------------------------------------------------------------------
-// OG IMAGE — Centralized so it's used consistently in OG, Twitter, schema
-// Replace /img/og-image.webp with your Zyminex-branded 1200×630 image
+// OG IMAGE — Centralized so it's used consistently in OG, Twitter, schema.
+// Uses the 1200x630 share image defined in CONSTANTS.OG_IMAGE (lib/seo.ts).
 // ---------------------------------------------------------------------------
 const OG_IMAGE = {
-  url: `${SITE_URL}/img/og-image.webp`,
-  width: 1200,
-  height: 630,
-  alt: `${CONSTANTS.BRAND_NAME} - Premium IPTV Provider with 55,000+ live channels in 4K Ultra HD`,
-  type: 'image/webp',
+  ...CONSTANTS.OG_IMAGE,
+  // Describes what the image actually shows (logo + tagline).
+  alt: `${CONSTANTS.BRAND_NAME} Plus logo with the tagline Stream More. Pay Less.`,
 };
 
 // ---------------------------------------------------------------------------
@@ -112,10 +111,13 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
+    // Relative values resolve to each page's own URL. Pages that define their
+    // own alternates override these; pages that inherit them (home, 404) must
+    // not point their hreflang at the homepage.
     canonical: './',
     languages: {
-      'en-US': SITE_URL,
-      'x-default': SITE_URL,
+      'en-US': './',
+      'x-default': './',
     },
   },
   openGraph: {
@@ -155,14 +157,8 @@ export const metadata: Metadata = {
       { url: '/img/favicons/apple-touch-icon-152x152.png', sizes: '152x152', type: 'image/png' },
       { url: '/img/favicons/apple-touch-icon-180x180.png', sizes: '180x180', type: 'image/png' },
     ],
-    other: [
-      {
-        rel: 'mask-icon',
-        url: '/img/favicons/safari-pinned-tab.svg',
-        color: '#39FF14',
-      },
-    ],
   },
+  // Served from public/img/favicons/site.webmanifest (uses the existing icons).
   manifest: '/img/favicons/site.webmanifest',
   appleWebApp: {
     capable: true,
@@ -171,8 +167,6 @@ export const metadata: Metadata = {
   },
   other: {
     'msapplication-TileColor': '#09090B',
-    'msapplication-TileImage': '/img/favicons/mstile-144x144.png',
-    'msapplication-config': '/img/favicons/browserconfig.xml',
   },
   category: 'entertainment',
   keywords: [
@@ -219,10 +213,10 @@ const OrganizationSchema = () => (
         logo: {
           '@type': 'ImageObject',
           '@id': `${SITE_URL}/#logo`,
-          url: `${SITE_URL}/img/iptv-logo.webp`,
-          contentUrl: `${SITE_URL}/img/iptv-logo.webp`,
-          width: 512,
-          height: 512,
+          url: CONSTANTS.LOGO_IMAGE.url,
+          contentUrl: CONSTANTS.LOGO_IMAGE.url,
+          width: CONSTANTS.LOGO_IMAGE.width,
+          height: CONSTANTS.LOGO_IMAGE.height,
           caption: `${CONSTANTS.BRAND_NAME} Logo`,
         },
         image: {
@@ -237,17 +231,16 @@ const OrganizationSchema = () => (
         description: `${CONSTANTS.BRAND_NAME} is a premium IPTV Provider with 55,000+ live channels and 150,000+ movies and TV shows in 4K Ultra HD. Instant email setup, free trial available, and flexible pricing with no contract.`,
         contactPoint: {
           '@type': 'ContactPoint',
-          telephone: CONSTANTS.CONTACT.phone,
+          // telephone omitted: CONSTANTS.CONTACT.phone is still the fictional
+          // placeholder "+1 555 000 0000". Add it back once a real number is set.
           email: CONSTANTS.CONTACT.email,
           contactType: 'customer service',
           availableLanguage: ['English'],
           areaServed: ['US'],
         },
-        sameAs: [
-          CONSTANTS.SOCIALS.twitter,
-          CONSTANTS.SOCIALS.instagram,
-          CONSTANTS.SOCIALS.facebook,
-        ],
+        // sameAs omitted: CONSTANTS.SOCIALS are still marked "Replace" in
+        // lib/seo.ts. sameAs asserts those profiles ARE this organization, so
+        // re-add it only with confirmed official profile URLs.
       }),
     }}
   />
@@ -298,13 +291,25 @@ export default function RootLayout({
         <OrganizationSchema />
         <WebSiteSchema />
 
-        <Loading />
-        <Header />
-        <main className="relative z-10">{children}</main>
-        <Footer />
+        {/* Keyboard users can bypass the header; hidden until focused. */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[10000] focus:rounded-full focus:bg-[#39FF14] focus:px-5 focus:py-3 focus:text-sm focus:font-black focus:uppercase focus:tracking-wider focus:text-[#09090B]"
+        >
+          Skip to content
+        </a>
 
+        <MotionProvider>
+          <Loading />
+          <Header />
+          <main id="main-content" tabIndex={-1} className="relative z-10 focus:outline-none">
+            {children}
+          </main>
+          <Footer />
+
+          <FloatingWhatsApp />
+        </MotionProvider>
         <GoogleAnalytics gaId="G-B9EMDZMPBF" />
-        <FloatingWhatsApp />
       </body>
     </html>
   );

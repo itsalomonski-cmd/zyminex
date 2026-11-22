@@ -1,13 +1,14 @@
-// app/dodo-iptv/layout.tsx
-// ⚠️ NOTE: The folder is still named "dodo-iptv". If this route is legacy,
-// consider redirecting /dodo-iptv → / in next.config.js and deleting this folder.
+// app/zyminex/layout.tsx
 import type { Metadata } from 'next';
 import { CONSTANTS } from '@/lib/seo';
+import { zyminexFaqs } from '@/lib/page-faqs';
 
 const SITE_URL = CONSTANTS.SITE_URL;
 const BRAND = CONSTANTS.BRAND_NAME;
 const FOCUS_KEYWORD = CONSTANTS.FOCUS_KEYWORD;
-const PAGE_URL = `${SITE_URL}/dodo-iptv`;
+// Must match this route's real URL: it drives the canonical, og:url, hreflang
+// and every JSON-LD @id on the page.
+const PAGE_URL = `${SITE_URL}/zyminex`;
 
 const clampTitle = (s: string, max = 60): string =>
   s.length <= max ? s : s.slice(0, max - 1).trimEnd() + '…';
@@ -60,20 +61,13 @@ export const metadata: Metadata = {
     siteName: BRAND,
     locale: 'en_US',
     type: 'website',
-    images: [
-      {
-        url: `${SITE_URL}/img/structer.webp`,
-        width: 1200,
-        height: 630,
-        alt: `${BRAND} - 55,000+ live channels in 4K Ultra HD`,
-      },
-    ],
+    images: [{ ...CONSTANTS.OG_IMAGE, alt: `${BRAND} - 55,000+ live channels in 4K Ultra HD` }],
   },
   twitter: {
     card: 'summary_large_image',
     title: PAGE_TITLE,
     description: PAGE_DESCRIPTION,
-    images: [`${SITE_URL}/img/structer.webp`],
+    images: [CONSTANTS.OG_IMAGE.url],
   },
   robots: {
     index: true,
@@ -128,15 +122,8 @@ const IptvPageSchema = () => {
         sku: `${BRAND.toUpperCase().replace(/\s+/g, '-')}-PREMIUM`,
         category: 'Streaming Service',
         description: `${BRAND} from ${BRAND}. Stream 55,000+ live channels and 150,000+ movies and TV shows in 4K Ultra HD. Guided WhatsApp setup, free trial available, USD pricing with no lock-in contract.`,
-        image: `${SITE_URL}/img/structer.webp`,
+        image: CONSTANTS.OG_IMAGE.url,
         brand: { '@type': 'Brand', name: BRAND },
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: '4.9',
-          reviewCount: '1255',
-          bestRating: '5',
-          worstRating: '1',
-        },
         offers: [
           // ---- 1 Screen ----
           {
@@ -247,56 +234,12 @@ const IptvPageSchema = () => {
       {
         '@type': 'FAQPage',
         '@id': `${PAGE_URL}/#faq`,
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: `What is ${BRAND}?`,
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `${BRAND} is a premium streaming service that delivers live television channels, movies, and TV shows over your internet connection. Our service offers 55,000+ live channels and 150,000+ movies and TV shows in 4K Ultra HD, with guided WhatsApp setup and USD pricing.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: `How much does ${BRAND} cost?`,
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `${BRAND} plans start at USD $35 for 3 months on 1 screen. The 12 month plan costs USD $75 for 1 screen, USD $109 for 2 screens, or USD $149 for 3 screens, and saves up to 60%.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: `Is there a free trial for ${BRAND}?`,
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `Yes. Message us on WhatsApp and we will set you up with a free 24 hour ${BRAND} trial. Test the 4K picture, check the channel lineup, and make sure everything runs smooth on your device before you upgrade to a paid plan.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: `Which devices work with ${BRAND}?`,
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `${BRAND} works on Amazon Firestick, Samsung and LG Smart TVs, Android TV, Google TV, Apple TV, iPhone, iPad, Windows PC, Mac, and MAG or Formuler set top boxes. Our team helps you install and configure a player like IPTV Smarters Pro on WhatsApp.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: `Do I need a VPN to use ${BRAND}?`,
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `No VPN is required. Our ${BRAND} servers are optimized to deliver smooth, buffer free streaming on your home connection.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: `How fast is ${BRAND} setup?`,
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Most customers are streaming within 10 minutes. You choose your plan, message us on WhatsApp, and our team walks you through the install step by step until everything is working.',
-            },
-          },
-        ],
+        // Built from the same list the page renders (lib/page-faqs.ts).
+        mainEntity: zyminexFaqs.map((faq) => ({
+          '@type': 'Question',
+          name: faq.q,
+          acceptedAnswer: { '@type': 'Answer', text: faq.a },
+        })),
       },
     ],
   };
@@ -319,7 +262,8 @@ export default function IptvLayout({
   return (
     <div className="w-full overflow-x-hidden min-h-screen flex flex-col bg-[#09090B] text-[#F8FAFC]">
       <IptvPageSchema />
-      <main className="flex-grow w-full">{children}</main>
+      {/* div, not <main>: the root layout already provides the single <main> landmark */}
+      <div className="flex-grow w-full">{children}</div>
     </div>
   );
 }

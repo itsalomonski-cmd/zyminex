@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FadeIn, FadeInStagger, FadeInItem } from './AnimatedSection';
 import { CONSTANTS } from '@/lib/seo';
@@ -20,57 +20,59 @@ import {
 } from 'lucide-react';
 
 const FOCUS_KEYWORD = CONSTANTS.FOCUS_KEYWORD;       // "Zyminex"
-const SECONDARY_KEYWORD = CONSTANTS.SECONDARY_FOCUS_KEYWORD;
 const THIRD_KEYWORD = CONSTANTS.TERTIARY_FOCUS_KEYWORD;
 
 // ---------------------------------------------------------------------------
 // Payment Method SVG Icons (dark-shell only, per dark-first design)
 // ---------------------------------------------------------------------------
+// Defined at module scope (not inside PaymentIcons) so React keeps a stable
+// component identity between renders instead of remounting each icon shell.
+const PAYMENT_SHELL_BG = '#0F2942';
+
+const PaymentShell = ({ children, border }: { children: ReactNode; border: string }) => (
+  <div
+    className="flex items-center justify-center h-8 w-12 rounded-md overflow-hidden shrink-0 transition-transform duration-300 hover:scale-110"
+    style={{ backgroundColor: PAYMENT_SHELL_BG, border: `1px solid ${border}` }}
+  >
+    {children}
+  </div>
+);
+
 const PaymentIcons = ({ variant = 'light' }: { variant?: 'light' | 'dark' }) => {
   const isDark = variant === 'dark';
-  const shellBg = '#0F2942';
   const shellBorder = isDark ? 'rgba(255,215,0,0.45)' : 'rgba(57,255,20,0.30)';
-
-  const Shell = ({ children }: { children: React.ReactNode }) => (
-    <div
-      className="flex items-center justify-center h-8 w-12 rounded-md overflow-hidden shrink-0 transition-transform duration-300 hover:scale-110"
-      style={{ backgroundColor: shellBg, border: `1px solid ${shellBorder}` }}
-    >
-      {children}
-    </div>
-  );
 
   return (
     <div className="grid grid-cols-5 gap-2 items-center">
-      <Shell>
+      <PaymentShell border={shellBorder}>
         <svg viewBox="0 0 48 32" className="h-5 w-auto" xmlns="http://www.w3.org/2000/svg">
           <text x="24" y="22" textAnchor="middle" fontFamily="Helvetica, Arial, sans-serif" fontSize="14" fontWeight="900" fontStyle="italic" fill="#F8FAFC" letterSpacing="-0.5">VISA</text>
         </svg>
-      </Shell>
-      <Shell>
+      </PaymentShell>
+      <PaymentShell border={shellBorder}>
         <svg viewBox="0 0 48 32" className="h-5 w-auto" xmlns="http://www.w3.org/2000/svg">
           <circle cx="19" cy="16" r="9" fill="#EB001B" />
           <circle cx="29" cy="16" r="9" fill="#F79E1B" />
           <path d="M24 8.5a9 9 0 000 15 9 9 0 000-15z" fill="#FF5F00" />
         </svg>
-      </Shell>
-      <Shell>
+      </PaymentShell>
+      <PaymentShell border={shellBorder}>
         <svg viewBox="0 0 48 32" className="h-5 w-auto" xmlns="http://www.w3.org/2000/svg">
           <text x="24" y="21" textAnchor="middle" fontFamily="Helvetica, Arial, sans-serif" fontSize="11" fontWeight="900" fontStyle="italic" fill="#60A5FA">Pay</text>
           <text x="24" y="27" textAnchor="middle" fontFamily="Helvetica, Arial, sans-serif" fontSize="9" fontWeight="800" fontStyle="italic" fill="#93C5FD">Pal</text>
         </svg>
-      </Shell>
-      <Shell>
+      </PaymentShell>
+      <PaymentShell border={shellBorder}>
         <svg viewBox="0 0 48 32" className="h-5 w-auto" xmlns="http://www.w3.org/2000/svg">
           <text x="24" y="21" textAnchor="middle" fontFamily="Helvetica, Arial, sans-serif" fontSize="12" fontWeight="900" fill="#60A5FA">SEPA</text>
         </svg>
-      </Shell>
-      <Shell>
+      </PaymentShell>
+      <PaymentShell border={shellBorder}>
         <svg viewBox="0 0 48 32" className="h-5 w-auto" xmlns="http://www.w3.org/2000/svg">
           <circle cx="24" cy="16" r="10" fill="#F7931A" />
           <text x="24" y="21" textAnchor="middle" fontFamily="Helvetica, Arial, sans-serif" fontSize="14" fontWeight="900" fill="#FFFFFF">₿</text>
         </svg>
-      </Shell>
+      </PaymentShell>
     </div>
   );
 };
@@ -255,7 +257,7 @@ export default function PricingSection() {
 
   return (
     <section
-      id="pricing-section"
+     
       className="w-full py-24 md:py-32 px-4 sm:px-6 lg:px-8 relative z-10 scroll-mt-20 bg-[#081425] text-[#F8FAFC] overflow-hidden"
     >
       {/* Background decorations — square grid pattern, clearly visible */}
@@ -333,7 +335,7 @@ export default function PricingSection() {
 
               <div className="relative z-10 flex flex-col">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-xs font-black text-[#39FF14] uppercase tracking-[0.2em]">Starter Plan</h4>
+                  <h3 className="text-xs font-black text-[#39FF14] uppercase tracking-[0.2em]">Starter Plan</h3>
                   <MonitorPlay className="w-5 h-5 text-[#39FF14] transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110" />
                 </div>
                 <div className="text-3xl font-black text-[#F8FAFC] mb-2 tracking-tighter uppercase">3 Months</div>
@@ -409,9 +411,9 @@ export default function PricingSection() {
 
               <div className="relative z-10 flex flex-col pt-2">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-xs font-black text-[#FFD700] uppercase tracking-[0.2em] flex items-center gap-1.5">
+                  <h3 className="text-xs font-black text-[#FFD700] uppercase tracking-[0.2em] flex items-center gap-1.5">
                     <Crown className="w-4 h-4 text-[#FFD700]" /> Ultimate VIP
-                  </h4>
+                  </h3>
                   <Sparkles className="w-4 h-4 text-[#FFD700] transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110" />
                 </div>
 
@@ -505,7 +507,7 @@ export default function PricingSection() {
 
               <div className="relative z-10 flex flex-col">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-xs font-black text-[#39FF14] uppercase tracking-[0.2em]">Premium Plan</h4>
+                  <h3 className="text-xs font-black text-[#39FF14] uppercase tracking-[0.2em]">Premium Plan</h3>
                   <MonitorPlay className="w-5 h-5 text-[#39FF14] transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110" />
                 </div>
                 <div className="text-3xl font-black text-[#F8FAFC] mb-2 tracking-tighter uppercase">6 Months</div>
@@ -580,9 +582,9 @@ export default function PricingSection() {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <ShieldCheck className="w-4 h-4 text-[#39FF14]" />
-                  <h4 className="text-base font-black text-[#F8FAFC] uppercase tracking-tight">
+                  <h3 className="text-base font-black text-[#F8FAFC] uppercase tracking-tight">
                     Free 24-Hour Trial
-                  </h4>
+                  </h3>
                 </div>
                 <p className="text-xs text-[#94A3B8] font-medium">
                   Test {FOCUS_KEYWORD} with no commitment on your TV or smartphone. Our support team guides you through the simple setup directly via WhatsApp.

@@ -2,8 +2,10 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { CONSTANTS } from '@/lib/seo';
+import { useId, useState } from 'react';
+import { CONSTANTS, FREE_TRIAL_WHATSAPP_URL } from '@/lib/seo';
+import { zyminexFaqs } from '@/lib/page-faqs';
+import { useHasMounted } from '@/hooks/use-has-mounted';
 import {
   PlayCircle,
   ShieldCheck,
@@ -15,13 +17,11 @@ import {
   MessageCircle,
   Tv,
   Film,
-  Globe,
   Sparkles,
   ChevronDown,
   KeyRound,
   Smartphone,
   CreditCard,
-  Settings,
   Star,
   Users,
 } from 'lucide-react';
@@ -54,64 +54,74 @@ const GlobalServerMap = dynamic(() => import('../components/GlobalServerMap'), {
 });
 
 const BRAND = CONSTANTS.BRAND_NAME;
-const FOCUS_KEYWORD = CONSTANTS.FOCUS_KEYWORD;
 
 // ---------------------------------------------------------------------------
 // FAQ ACCORDION ITEM
 // ---------------------------------------------------------------------------
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [isOpen, setIsOpen] = useState(false);
+  const id = useId();
 
+  // Accessible accordion: heading contains the toggle button; the answer sits
+  // outside it (it used to be inside, becoming part of the button's name).
+  // Padding is split between header and answer so the card looks the same.
   return (
-    <button
-      onClick={() => setIsOpen(!isOpen)}
+    <div
       className={`w-full text-left bg-[#18181B] border-2 ${
         isOpen ? 'border-[#39FF14]' : 'border-[#27272A]'
-      } rounded-2xl p-6 hover:border-[#39FF14]/60 transition-all duration-300 group cursor-pointer`}
-      aria-expanded={isOpen}
+      } rounded-2xl hover:border-[#39FF14]/60 transition-all duration-300 group`}
     >
-      <div className="flex justify-between items-center gap-4">
-        <h3
-          className={`text-lg md:text-xl font-black uppercase tracking-tight transition-colors ${
-            isOpen ? 'text-[#39FF14]' : 'text-[#F8FAFC] group-hover:text-[#39FF14]'
-          } flex items-center gap-3`}
+      <h3>
+        <button
+          type="button"
+          id={`${id}-q`}
+          onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+          aria-controls={`${id}-a`}
+          className={`w-full text-left px-6 pt-6 ${isOpen ? 'pb-4' : 'pb-6'} flex justify-between items-center gap-4 transition-all duration-300 cursor-pointer rounded-2xl`}
         >
           <span
-            className={`${
-              isOpen ? 'text-[#39FF14]' : 'text-[#94A3B8]'
-            } font-black text-2xl`}
+            className={`text-lg md:text-xl font-black uppercase tracking-tight transition-colors ${
+              isOpen ? 'text-[#39FF14]' : 'text-[#F8FAFC] group-hover:text-[#39FF14]'
+            } flex items-center gap-3`}
           >
-            Q.
+            <span
+              className={`${
+                isOpen ? 'text-[#39FF14]' : 'text-[#94A3B8]'
+              } font-black text-2xl`}
+            >
+              Q.
+            </span>
+            {q}
           </span>
-          {q}
-        </h3>
-        <ChevronDown
-          className={`w-6 h-6 flex-shrink-0 transition-transform duration-300 ${
-            isOpen
-              ? 'rotate-180 text-[#39FF14]'
-              : 'text-[#94A3B8] group-hover:text-[#39FF14]/50'
-          }`}
-        />
-      </div>
+          <ChevronDown
+            aria-hidden="true"
+            className={`w-6 h-6 flex-shrink-0 transition-transform duration-300 ${
+              isOpen
+                ? 'rotate-180 text-[#39FF14]'
+                : 'text-[#94A3B8] group-hover:text-[#39FF14]/50'
+            }`}
+          />
+        </button>
+      </h3>
       <div
-        className={`overflow-hidden transition-all duration-300 ${
-          isOpen ? 'max-h-96 mt-4 opacity-100' : 'max-h-0 opacity-0'
+        id={`${id}-a`}
+        aria-hidden={!isOpen}
+        className={`overflow-hidden transition-all duration-300 px-6 ${
+          isOpen ? 'max-h-96 opacity-100 pb-6' : 'max-h-0 opacity-0'
         }`}
       >
         <p className="text-[#94A3B8] font-medium leading-relaxed pl-10 md:pl-12 border-l-4 border-[#39FF14] ml-2 py-2">
           {a}
         </p>
       </div>
-    </button>
+    </div>
   );
 }
 
 export default function HomePage() {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // false during SSR/hydration, true on the client (same gating as before).
+  const isMounted = useHasMounted();
 
   return (
     <div className="flex flex-col min-h-screen bg-[#09090B] text-[#F8FAFC] overflow-hidden">
@@ -121,7 +131,7 @@ export default function HomePage() {
         <div className="absolute inset-0 z-0">
           <img
             src="/img/background.webp"
-            alt={`${BRAND} streaming in 4K ultra HD quality`}
+            alt=""
             fetchPriority="high"
             loading="eager"
             className="absolute inset-0 w-full h-full object-cover object-center brightness-[0.22]"
@@ -162,12 +172,14 @@ export default function HomePage() {
             >
               Get {BRAND} Now
             </Link>
-            <Link
-              href="/free-trial"
+            <a
+              href={FREE_TRIAL_WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full sm:w-auto text-center whitespace-nowrap py-3.5 px-8 rounded-full bg-[#18181B]/80 text-[#F8FAFC] border border-[#27272A] font-black text-sm hover:bg-[#27272A] transition-all hover:scale-105 uppercase tracking-wider flex items-center justify-center gap-2 shrink-0 backdrop-blur-md cursor-pointer"
             >
               <PlayCircle className="w-5 h-5 text-[#39FF14] shrink-0" /> Claim Free Trial
-            </Link>
+            </a>
           </div>
 
           <div className="mt-12 flex flex-wrap justify-center gap-6 text-xs md:text-sm text-[#F8FAFC] font-bold uppercase tracking-widest bg-[#18181B]/80 backdrop-blur-md px-8 py-4 rounded-3xl border border-[#27272A] shadow-2xl">
@@ -549,32 +561,7 @@ export default function HomePage() {
           </FadeIn>
 
           <FadeInStagger className="space-y-4">
-            {[
-              {
-                q: `What is ${BRAND}?`,
-                a: `${BRAND} is a premium IPTV service that delivers live television channels, movies, and TV shows over your internet connection. Our service offers 55,000+ live channels and 150,000+ movies and TV shows in 4K Ultra HD, with guided WhatsApp setup and USD pricing.`,
-              },
-              {
-                q: `How do I get my ${BRAND} login details?`,
-                a: `Pick your plan, message us on WhatsApp, and our team sends your ${BRAND} Xtream Codes API details in the chat. You also get step by step help installing the player app and loading your channel list.`,
-              },
-              {
-                q: `Which IPTV players support ${BRAND}?`,
-                a: `Most modern IPTV players support the Xtream Codes API format. The most popular ones are IPTV Smarters Pro, TiviMate, IBO Player Pro, and XCIPTV. Our team helps you choose the right one for your device.`,
-              },
-              {
-                q: `Do I need technical skills to set up ${BRAND}?`,
-                a: `No. Setup takes about 10 minutes with our help. You install the player app, copy the details we send on WhatsApp, paste them into the login fields, and your channel list loads automatically.`,
-              },
-              {
-                q: `What is the difference between ${BRAND} and other IPTV providers?`,
-                a: `${BRAND} runs on high-quality infrastructure with 55,000+ channels, 150,000+ movies, 99.9% uptime, global-optimized edge servers, and 24/7 WhatsApp support. You get a premium service with no lock-in contracts.`,
-              },
-              {
-                q: `Is there a free trial for ${BRAND}?`,
-                a: `Yes. Message us on WhatsApp and we will send you a free 24 hour trial ${BRAND} login. Test the 4K picture, check the sport lineup, and make sure everything runs smooth on your internet before you commit to a paid plan.`,
-              },
-            ].map((faq, i) => (
+            {zyminexFaqs.map((faq, i) => (
               <FadeInItem key={i}>
                 <FAQItem q={faq.q} a={faq.a} />
               </FadeInItem>
@@ -632,12 +619,14 @@ export default function HomePage() {
                 >
                   Choose Your Plan
                 </Link>
-                <Link
-                  href="/free-trial"
+                <a
+                  href={FREE_TRIAL_WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-full sm:w-auto text-center whitespace-nowrap inline-flex items-center justify-center gap-2 rounded-2xl border border-[#27272A] bg-[#09090B] px-8 py-4 text-xs sm:text-sm font-black uppercase tracking-widest text-[#F8FAFC] hover:border-[#39FF14] transition-all hover:scale-105 shrink-0 shadow-sm cursor-pointer"
                 >
                   <PlayCircle className="h-4 w-4 text-[#39FF14] shrink-0" /> Free 24h Trial
-                </Link>
+                </a>
               </div>
 
               <p className="mt-8 text-[11px] sm:text-xs font-black text-[#39FF14] uppercase tracking-wider">

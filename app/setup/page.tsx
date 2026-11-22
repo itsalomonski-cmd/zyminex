@@ -1,8 +1,9 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { CONSTANTS } from '@/lib/seo';
+import { setupFaqs } from '@/lib/page-faqs';
 import Link from 'next/link';
 import {
   MonitorSmartphone,
@@ -30,6 +31,7 @@ import {
   ShieldCheck,
   Globe,
   Phone,
+  type LucideIcon,
 } from 'lucide-react';
 import { FadeIn, FadeInStagger, FadeInItem } from '../components/AnimatedSection';
 import ShareButtons from '../components/ShareButtons';
@@ -52,9 +54,33 @@ const devices = [
 // ---------------------------------------------------------------------------
 // STEP DATA
 // ---------------------------------------------------------------------------
+type SetupStepCta =
+  | { type: 'internal'; label: string; href: string }
+  | { type: 'external'; label: string; href: string }
+  | { type: 'whatsapp'; label: string; message: string };
+
+interface SetupStep {
+  number: number;
+  title: string;
+  description: string;
+  duration: string;
+  icon: LucideIcon;
+  chips?: string[];
+  methods?: { title: string; subtitle: string; points: string[]; highlighted?: boolean }[];
+  stats?: { value: string; label: string }[];
+  cta?: SetupStepCta;
+  tip?: string;
+}
+
+interface SetupDevice {
+  title: string;
+  icon: LucideIcon;
+  steps: SetupStep[];
+}
+
 const stepData = {
   firestick: {
-    title: `Setup ${FOCUS_KEYWORD} on Firestick & Android TV`,
+    title: `Set Up ${FOCUS_KEYWORD} on Firestick & Android TV`,
     icon: MonitorSmartphone,
     steps: [
       {
@@ -125,7 +151,7 @@ const stepData = {
     ],
   },
   smarttv: {
-    title: `Setup ${FOCUS_KEYWORD} on Smart TV`,
+    title: `Set Up ${FOCUS_KEYWORD} on Smart TV`,
     icon: Tv,
     steps: [
       {
@@ -145,7 +171,7 @@ const stepData = {
         chips: ['Credit Card', 'PayPal', 'Crypto', 'Apple & Google Pay'],
         duration: '2-3 min',
         icon: MessageCircle,
-        cta: { label: 'Chat on WhatsApp', type: 'whatsapp', message: `Hi! I want to setup ${FOCUS_KEYWORD} on my Smart TV.` },
+        cta: { label: 'Chat on WhatsApp', type: 'whatsapp', message: `Hi! I want to set up ${FOCUS_KEYWORD} on my Smart TV.` },
         tip: 'Samsung and LG app stores vary by region. Most modern models have IPTV Smarters Pro available directly. Older models may need a Firestick.',
       },
       {
@@ -196,7 +222,7 @@ const stepData = {
     ],
   },
   apple: {
-    title: `Setup ${FOCUS_KEYWORD} on Apple Devices`,
+    title: `Set Up ${FOCUS_KEYWORD} on Apple Devices`,
     icon: Apple,
     steps: [
       {
@@ -267,7 +293,7 @@ const stepData = {
     ],
   },
   pc: {
-    title: `Setup ${FOCUS_KEYWORD} on PC & Mac`,
+    title: `Set Up ${FOCUS_KEYWORD} on PC & Mac`,
     icon: Laptop,
     steps: [
       {
@@ -287,7 +313,7 @@ const stepData = {
         chips: ['Credit Card', 'PayPal', 'Crypto', 'Apple & Google Pay'],
         duration: '2-3 min',
         icon: MessageCircle,
-        cta: { label: 'Chat on WhatsApp', type: 'whatsapp', message: `Hi! I need setup ${FOCUS_KEYWORD} on PC or Mac.` },
+        cta: { label: 'Chat on WhatsApp', type: 'whatsapp', message: `Hi! I need to set up ${FOCUS_KEYWORD} on PC or Mac.` },
         tip: 'For Windows, ask for the M3U URL if you want to stream immediately in VLC before installing a full IPTV player.',
       },
       {
@@ -337,57 +363,24 @@ const stepData = {
       },
     ],
   },
-};
+} satisfies Record<string, SetupDevice>;
 
 // ---------------------------------------------------------------------------
 // FAQ — Short 8 items
 // ---------------------------------------------------------------------------
-const setupFaqs = [
-  {
-    q: 'How do I receive my login details after purchasing a plan?',
-    a: 'Everything is handled live over WhatsApp. Once you confirm your plan and complete payment, our support team sends your setup details directly in the chat, usually within minutes.',
-  },
-  {
-    q: `Which IPTV player do you recommend for setup ${FOCUS_KEYWORD}?`,
-    a: 'We recommend IPTV Smarters Pro for the fastest channel zapping, lowest RAM usage, and best 4K performance across Firestick, Smart TVs, Apple devices, and PC or Mac. It is our top pick for smooth playback.',
-  },
-  {
-    q: 'Do I need to activate IPTV Smarters Pro separately?',
-    a: 'The activation service is included free with every subscription. Choose Auto Setup (send us your Device Key and we activate remotely) or Manual Setup (enter your M3U or Xtream Codes yourself).',
-  },
-  {
-    q: `How long does setup ${FOCUS_KEYWORD} take?`,
-    a: 'Most customers are streaming within 10 minutes. Installing IPTV Smarters Pro takes about 2 minutes, activation takes 1 to 2 minutes, and content loading takes 1 to 2 minutes.',
-  },
-  {
-    q: 'Can I use my login credentials on multiple devices?',
-    a: 'Yes. You can install the app on unlimited devices. The number of simultaneous streams depends on your plan, with 1 screen on the Starter, and 2 or 3 screens on the Multi-Room plans.',
-  },
-  {
-    q: 'What should I do if I get a login error in IPTV Smarters Pro?',
-    a: 'Confirm you selected the Xtream Codes API method (not M3U) and that there are no extra spaces in your username or password. If it persists, message us on WhatsApp and most issues resolve within 2 minutes.',
-  },
-  {
-    q: `What internet speed do I need for 4K ${FOCUS_KEYWORD} streaming?`,
-    a: 'For 4K Ultra HD we recommend 30 Mbps minimum. Full HD 1080p runs smoothly on 15 Mbps. Our anti-freeze server technology adapts to your connection speed automatically.',
-  },
-  {
-    q: `Do I need a VPN to use ${FOCUS_KEYWORD}?`,
-    a: 'No. Our global servers are optimized and secure. If your internet provider applies streaming throttling during peak hours, you can enable a VPN without issues.',
-  },
-];
+// setupFaqs lives in lib/page-faqs.ts (shared with the FAQPage JSON-LD).
 
 // ---------------------------------------------------------------------------
 // LONG-FORM Q&A
 // ---------------------------------------------------------------------------
 const longFormFaqs = [
   {
-    q: `What devices work best for setup ${FOCUS_KEYWORD}?`,
+    q: `What devices work best for ${FOCUS_KEYWORD}?`,
     a: `For the best ${FOCUS_KEYWORD} experience, we recommend Amazon Firestick 4K Max for streaming sticks, Samsung Tizen or LG webOS Smart TVs for built-in apps, Apple TV 4K for the AirPlay ecosystem, and any Windows 11 or macOS Sonoma desktop for full 4K playback. All of these devices support IPTV Smarters Pro, our recommended IPTV player, and handle 4K and 60FPS content without frame drops. Older devices like Firestick Lite or second-generation Apple TV still work but cap out at Full HD. For the smoothest 4K performance, choose hardware from the last two generations.`,
   },
   {
     q: 'How does remote activation actually work?',
-    a: `Remote activation is the easiest setup ${FOCUS_KEYWORD} method. After you contact us on WhatsApp and complete payment, our support team asks for your device identifier. For IPTV Smarters Pro this is a Device Key or MAC address shown on the app welcome screen. We register that key on our server, link it to your subscription, and within 60 seconds your channel list loads automatically the moment you reopen the app. No typing, no manual credentials, no risk of errors. If you prefer to handle it yourself, we also send the standard M3U URL and Xtream Codes credentials. Both methods produce identical 4K streaming performance.`,
+    a: `Remote activation is the easiest ${FOCUS_KEYWORD} setup method. After you contact us on WhatsApp and complete payment, our support team asks for your device identifier. For IPTV Smarters Pro this is a Device Key or MAC address shown on the app welcome screen. We register that key on our server, link it to your subscription, and within 60 seconds your channel list loads automatically the moment you reopen the app. No typing, no manual credentials, no risk of errors. If you prefer to handle it yourself, we also send the standard M3U URL and Xtream Codes credentials. Both methods produce identical 4K streaming performance.`,
   },
   {
     q: 'What if I have an older Smart TV that cannot install IPTV Smarters Pro?',
@@ -402,7 +395,7 @@ const longFormFaqs = [
 // ---------------------------------------------------------------------------
 // STEP ITEM
 // ---------------------------------------------------------------------------
-function StepItem({ step, index, isLast }: { step: any; index: number; isLast: boolean }) {
+function StepItem({ step, index, isLast }: { step: SetupStep; index: number; isLast: boolean }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
   const Icon = step.icon;
@@ -480,7 +473,7 @@ function StepItem({ step, index, isLast }: { step: any; index: number; isLast: b
 
             {step.methods && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                {step.methods.map((m: any) => (
+                {step.methods.map((m) => (
                   <div key={m.title} className={`rounded-xl p-4 border-2 transition-all ${m.highlighted ? 'bg-[#39FF14]/5 border-[#39FF14]' : 'bg-[#09090B] border-[#27272A]'}`}>
                     <div className="flex items-center gap-2 mb-2">
                       <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${m.highlighted ? 'bg-[#39FF14] text-[#09090B]' : 'bg-[#27272A] text-[#94A3B8]'}`}>
@@ -503,7 +496,7 @@ function StepItem({ step, index, isLast }: { step: any; index: number; isLast: b
 
             {step.stats && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-                {step.stats.map((s: any) => (
+                {step.stats.map((s) => (
                   <div key={s.label} className="rounded-xl bg-[#09090B] text-center py-3 px-2 border border-[#27272A]">
                     <div className="text-base md:text-lg font-black text-[#39FF14] leading-none">{s.value}</div>
                     <div className="text-[9px] md:text-[10px] font-black uppercase tracking-wider text-[#94A3B8] mt-1">{s.label}</div>
@@ -564,26 +557,29 @@ export default function SetupPage() {
   const [openFaqIndex, setOpenIndex] = useState<number | null>(0);
   const currentData = stepData[activeDevice as keyof typeof stepData];
   const CurrentIcon = currentData.icon;
-  const iframeRef = useRef<HTMLIFrameElement>(null);
 
+  // The iframe is only mounted while the modal is open, so its JSX `src`
+  // starts playback on open and unmounting it on close stops playback.
+  const closeVideo = () => setIsVideoOpen(false);
+  const openVideo = () => setIsVideoOpen(true);
+
+  // Video dialog keyboard support: focus the close button on open, close on
+  // Escape, and return focus to the button that opened it.
+  const videoTriggerRef = useRef<HTMLButtonElement>(null);
+  const videoCloseRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    const timer = setTimeout(() => setIsVideoOpen(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const closeVideo = () => {
-    setIsVideoOpen(false);
-    if (iframeRef.current) iframeRef.current.src = '';
-  };
-
-  const openVideo = () => {
-    setIsVideoOpen(true);
-    setTimeout(() => {
-      if (iframeRef.current) {
-        iframeRef.current.src = 'https://www.youtube.com/embed/9pZOoS-1NHg?autoplay=1&rel=0';
-      }
-    }, 100);
-  };
+    if (!isVideoOpen) return;
+    const trigger = videoTriggerRef.current;
+    videoCloseRef.current?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsVideoOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      trigger?.focus();
+    };
+  }, [isVideoOpen]);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#09090B]">
@@ -595,7 +591,7 @@ export default function SetupPage() {
         <div className="absolute inset-0 z-0">
           <img
             src="/img/bg-1.webp"
-            alt={`Setup ${FOCUS_KEYWORD} on Firestick, Smart TV, Apple and Android`}
+            alt=""
             fetchPriority="high"
             loading="eager"
             className="absolute inset-0 w-full h-full object-cover brightness-[0.2]"
@@ -627,7 +623,7 @@ export default function SetupPage() {
 
             <FadeInItem>
               <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-[#F8FAFC] tracking-tighter uppercase mb-6 leading-none text-center">
-                SETUP {FOCUS_KEYWORD.toUpperCase()} <br />
+                SET UP {FOCUS_KEYWORD.toUpperCase()} <br />
                 <span className="text-[#39FF14]">IN UNDER 10 MINUTES</span>
               </h1>
             </FadeInItem>
@@ -649,9 +645,10 @@ export default function SetupPage() {
 
             <FadeInItem className="mt-8 relative flex justify-center">
               <button
+                ref={videoTriggerRef}
                 onClick={openVideo}
                 className="inline-flex items-center justify-center p-2 rounded-full bg-[#18181B] border border-[#27272A] hover:border-[#39FF14]/60 transition-all duration-300 relative z-10 shadow-inner group cursor-pointer"
-                aria-label={`Watch setup ${FOCUS_KEYWORD} video tutorial`}
+                aria-label={`Watch the ${FOCUS_KEYWORD} setup video tutorial`}
               >
                 <div className="flex items-center gap-4 bg-[#09090B] px-6 sm:px-8 py-4 sm:py-5 rounded-full border border-[#27272A] hover:bg-[#27272A] transition-colors">
                   <PlayCircle className="w-8 h-8 sm:w-10 sm:h-10 text-[#39FF14] shrink-0 group-hover:scale-110 transition-transform" />
@@ -683,9 +680,11 @@ export default function SetupPage() {
             </div>
             <div className="absolute inset-0 rounded-full bg-[#39FF14]/30 animate-ping opacity-75 pointer-events-none" />
           </div>
-          <h4 className="text-[#F8FAFC] text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none drop-shadow-md max-w-2xl">
+          {/* Promotional call-out, not a section heading (it sat as an h4 directly
+              under the h1, breaking the outline). Styling is entirely class-based. */}
+          <p className="text-[#F8FAFC] text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-tighter leading-none drop-shadow-md max-w-2xl">
             TRY {FOCUS_KEYWORD.toUpperCase()} WITH IPTV SMARTERS PRO FREE!
-          </h4>
+          </p>
           <p className="text-[#94A3B8] text-sm sm:text-base md:text-lg font-bold max-w-xl leading-relaxed">
             55,000+ live channels, 150,000+ movies and TV shows, live sports and PPV. Activated via WhatsApp in minutes.
           </p>
@@ -714,7 +713,7 @@ export default function SetupPage() {
       <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full bg-[#09090B]">
         <FadeIn className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#F8FAFC] mb-4 uppercase tracking-tighter leading-none">
-            Setup {FOCUS_KEYWORD} on <span className="text-[#39FF14]">Your Device</span>
+            Set Up {FOCUS_KEYWORD} on <span className="text-[#39FF14]">Your Device</span>
           </h2>
           <p className="text-[#94A3B8] text-base md:text-lg font-bold max-w-2xl mx-auto mt-4">
             Select your platform below for detailed step-by-step {FOCUS_KEYWORD} setup instructions.
@@ -729,6 +728,7 @@ export default function SetupPage() {
               <button
                 key={device.id}
                 onClick={() => setActiveDevice(device.id)}
+                aria-pressed={isActive}
                 className={`relative p-4 sm:p-6 rounded-3xl text-center transition-all duration-300 cursor-pointer group ${
                   isActive
                     ? 'bg-[#18181B] text-[#F8FAFC] border-2 border-[#39FF14] shadow-2xl scale-[1.02]'
@@ -743,10 +743,12 @@ export default function SetupPage() {
                 <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4 transition-colors ${isActive ? 'bg-[#39FF14] text-[#09090B]' : 'bg-[#09090B] text-[#94A3B8]'}`}>
                   <Icon className="w-7 h-7 sm:w-8 sm:h-8 shrink-0" />
                 </div>
-                <h3 className="text-sm sm:text-base md:text-lg font-black uppercase tracking-wide mb-2">{device.name}</h3>
-                <p className={`text-[10px] sm:text-xs font-bold ${isActive ? 'text-[#39FF14]' : 'text-[#94A3B8]'}`}>
+                {/* Button labels, not section headings: spans (block) keep the
+                    identical layout while staying valid inside a <button>. */}
+                <span className="block text-sm sm:text-base md:text-lg font-black uppercase tracking-wide mb-2">{device.name}</span>
+                <span className={`block text-[10px] sm:text-xs font-bold ${isActive ? 'text-[#39FF14]' : 'text-[#94A3B8]'}`}>
                   {device.steps} easy steps
-                </p>
+                </span>
               </button>
             );
           })}
@@ -763,7 +765,7 @@ export default function SetupPage() {
             <span className="truncate">{currentData.title}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#F8FAFC] mb-4 uppercase tracking-tighter">
-            Setup {FOCUS_KEYWORD} <span className="text-[#39FF14]">Step by Step</span>
+            Set Up {FOCUS_KEYWORD} <span className="text-[#39FF14]">Step by Step</span>
           </h2>
           <p className="text-[#94A3B8] text-sm md:text-base font-bold uppercase tracking-widest mt-2">
             Follow the steps for a flawless setup in under 10 minutes
@@ -814,7 +816,7 @@ export default function SetupPage() {
             </span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#F8FAFC] mb-6 uppercase tracking-tighter leading-tight max-w-4xl mx-auto">
-            Why Setup {FOCUS_KEYWORD} <span className="text-[#39FF14]">With Our Team?</span>
+            Why Set Up {FOCUS_KEYWORD} <span className="text-[#39FF14]">With Our Team?</span>
           </h2>
           <p className="text-[#94A3B8] text-base md:text-lg font-bold max-w-3xl mx-auto leading-relaxed">
             Thousands of households trust our hands-on WhatsApp support to handle their entire {FOCUS_KEYWORD} setup, from plan selection to IPTV Smarters Pro activation. Here is why customers pick us over generic DIY guides.
@@ -836,7 +838,7 @@ export default function SetupPage() {
             {
               icon: Clock,
               title: 'Setup in Under 10 Minutes',
-              desc: `Average setup ${FOCUS_KEYWORD} time from first message to first live channel is 8 to 10 minutes. Fastest customers activate in under 5 minutes.`,
+              desc: `Average ${FOCUS_KEYWORD} setup time from first message to first live channel is 8 to 10 minutes. Fastest customers activate in under 5 minutes.`,
             },
             {
               icon: PlayCircle,
@@ -873,7 +875,7 @@ export default function SetupPage() {
 
         <FadeIn className="mt-12 max-w-3xl mx-auto text-center">
           <p className="text-[#94A3B8] text-sm sm:text-base font-medium leading-relaxed mb-8">
-            Setup {FOCUS_KEYWORD} does not need to be complicated. Our team has activated thousands of subscriptions across Firestick, Smart TVs, Apple devices, Android boxes, and computers. Every customer gets the same white-glove service: real-time WhatsApp chat, live guidance, and a complete IPTV Smarters Pro activation service. Whether you are cord-cutting for the first time or upgrading from a slow cable package, we will get you streaming in under 10 minutes.
+            Setting up {FOCUS_KEYWORD} does not need to be complicated. Our team has activated thousands of subscriptions across Firestick, Smart TVs, Apple devices, Android boxes, and computers. Every customer gets the same white-glove service: real-time WhatsApp chat, live guidance, and a complete IPTV Smarters Pro activation service. Whether you are cord-cutting for the first time or upgrading from a slow cable package, we will get you streaming in under 10 minutes.
           </p>
           <a
             href={`${CONSTANTS.CONTACT.whatsappUrl}?text=${encodeURIComponent(`Hi! I want ${FOCUS_KEYWORD} setup help from your team.`)}`}
@@ -905,7 +907,7 @@ export default function SetupPage() {
               href={`${CONSTANTS.CONTACT.whatsappUrl}?text=${encodeURIComponent(`Hi! I would like the free 24 hour ${FOCUS_KEYWORD} trial.`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-[#39FF14] font-black uppercase text-xs tracking-widest hover:gap-3 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 text-[#39FF14] font-black uppercase text-xs tracking-widest hover:gap-3 transition-all cursor-pointer py-2 -my-2"
             >
               Request Free Trial <ArrowRight className="w-4 h-4" />
             </a>
@@ -925,7 +927,7 @@ export default function SetupPage() {
               href={`${CONSTANTS.CONTACT.whatsappUrl}?text=${encodeURIComponent(`Hi! I need ${FOCUS_KEYWORD} setup help.`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-green-500 font-black uppercase text-xs tracking-widest hover:gap-3 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 text-green-500 font-black uppercase text-xs tracking-widest hover:gap-3 transition-all cursor-pointer py-2 -my-2"
             >
               Chat on WhatsApp <ArrowRight className="w-4 h-4" />
             </a>
@@ -941,7 +943,7 @@ export default function SetupPage() {
       {/* ==========================================================
           FAQ — Short 8 items
       ========================================================== */}
-      <section className="py-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full bg-[#09090B] relative" aria-label={`Setup ${FOCUS_KEYWORD} FAQs`}>
+      <section className="py-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full bg-[#09090B] relative" aria-label={`${FOCUS_KEYWORD} setup FAQs`}>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-96 bg-[#39FF14]/5 blur-[120px] rounded-full pointer-events-none" />
 
         <FadeIn className="text-center mb-16 relative z-10">
@@ -949,7 +951,7 @@ export default function SetupPage() {
             <span className="text-[#39FF14] font-black text-xs uppercase tracking-widest">Setup FAQ</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#F8FAFC] mb-6 uppercase tracking-tighter leading-none">
-            Setup {FOCUS_KEYWORD} <span className="text-[#39FF14]">Questions</span>
+            {FOCUS_KEYWORD} Setup <span className="text-[#39FF14]">Questions</span>
           </h2>
           <p className="text-[#94A3B8] font-bold text-base md:text-lg max-w-2xl mx-auto mt-4">
             Quick answers to the most common {FOCUS_KEYWORD} setup questions.
@@ -959,24 +961,37 @@ export default function SetupPage() {
         <FadeInStagger className="space-y-4 relative z-10">
           {setupFaqs.map((faq, i) => (
             <FadeInItem key={i}>
-              <button
-                onClick={() => setOpenIndex(openFaqIndex === i ? null : i)}
-                className={`w-full text-left bg-[#18181B] border-2 ${openFaqIndex === i ? 'border-[#39FF14]' : 'border-[#27272A]'} rounded-2xl p-5 sm:p-6 hover:border-[#39FF14]/60 transition-all duration-300 group cursor-pointer`}
-                aria-expanded={openFaqIndex === i}
+              {/* Accessible accordion: heading contains the toggle; the answer is
+                  outside the button. Padding split keeps the card identical. */}
+              <div
+                className={`w-full text-left bg-[#18181B] border-2 ${openFaqIndex === i ? 'border-[#39FF14]' : 'border-[#27272A]'} rounded-2xl hover:border-[#39FF14]/60 transition-all duration-300 group`}
               >
-                <div className="flex justify-between items-center gap-4">
-                  <h3 className={`text-base sm:text-lg md:text-xl font-black uppercase tracking-tight transition-colors ${openFaqIndex === i ? 'text-[#39FF14]' : 'text-[#F8FAFC] group-hover:text-[#39FF14]'} flex items-start sm:items-center gap-3 text-left`}>
-                    <span className={`${openFaqIndex === i ? 'text-[#39FF14]' : 'text-[#94A3B8]'} font-black text-xl sm:text-2xl shrink-0`}>Q.</span>
-                    <span>{faq.q}</span>
-                  </h3>
-                  <ChevronDown className={`w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 transition-transform duration-300 ${openFaqIndex === i ? 'rotate-180 text-[#39FF14]' : 'text-[#94A3B8] group-hover:text-[#39FF14]/50'}`} />
-                </div>
-                <div className={`overflow-hidden transition-all duration-300 ${openFaqIndex === i ? 'max-h-96 mt-4 opacity-100' : 'max-h-0 opacity-0'}`}>
+                <h3>
+                  <button
+                    type="button"
+                    id={`setup-faq-q-${i}`}
+                    onClick={() => setOpenIndex(openFaqIndex === i ? null : i)}
+                    aria-expanded={openFaqIndex === i}
+                    aria-controls={`setup-faq-a-${i}`}
+                    className={`w-full text-left px-5 sm:px-6 pt-5 sm:pt-6 ${openFaqIndex === i ? 'pb-4' : 'pb-5 sm:pb-6'} flex justify-between items-center gap-4 transition-all duration-300 cursor-pointer rounded-2xl`}
+                  >
+                    <span className={`text-base sm:text-lg md:text-xl font-black uppercase tracking-tight transition-colors ${openFaqIndex === i ? 'text-[#39FF14]' : 'text-[#F8FAFC] group-hover:text-[#39FF14]'} flex items-start sm:items-center gap-3 text-left`}>
+                      <span className={`${openFaqIndex === i ? 'text-[#39FF14]' : 'text-[#94A3B8]'} font-black text-xl sm:text-2xl shrink-0`}>Q.</span>
+                      <span>{faq.q}</span>
+                    </span>
+                    <ChevronDown aria-hidden="true" className={`w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 transition-transform duration-300 ${openFaqIndex === i ? 'rotate-180 text-[#39FF14]' : 'text-[#94A3B8] group-hover:text-[#39FF14]/50'}`} />
+                  </button>
+                </h3>
+                <div
+                  id={`setup-faq-a-${i}`}
+                  aria-hidden={openFaqIndex !== i}
+                  className={`overflow-hidden transition-all duration-300 px-5 sm:px-6 ${openFaqIndex === i ? 'max-h-96 opacity-100 pb-5 sm:pb-6' : 'max-h-0 opacity-0'}`}
+                >
                   <p className="text-[#94A3B8] font-medium leading-relaxed text-sm sm:text-base pl-9 sm:pl-12 border-l-4 border-[#39FF14] ml-1 sm:ml-2 py-2">
                     {faq.a}
                   </p>
                 </div>
-              </button>
+              </div>
             </FadeInItem>
           ))}
         </FadeInStagger>
@@ -996,7 +1011,7 @@ export default function SetupPage() {
             </span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#F8FAFC] mb-6 uppercase tracking-tighter leading-tight max-w-4xl mx-auto">
-            Setup {FOCUS_KEYWORD} <span className="text-[#39FF14]">Explained in Depth</span>
+            {FOCUS_KEYWORD} Setup <span className="text-[#39FF14]">Explained in Depth</span>
           </h2>
           <p className="text-[#94A3B8] text-base md:text-lg font-bold max-w-3xl mx-auto leading-relaxed">
             Longer answers for the questions our support team hears most often. Each answer helps you get the most out of your {FOCUS_KEYWORD} subscription and IPTV Smarters Pro setup.
@@ -1036,17 +1051,19 @@ export default function SetupPage() {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4"
           onClick={(e) => { if (e.target === e.currentTarget) closeVideo(); }}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${FOCUS_KEYWORD} setup video tutorial`}
         >
           <div className="relative w-full max-w-4xl">
-            <button onClick={closeVideo} className="absolute -top-12 right-0 text-[#94A3B8] hover:text-[#39FF14] transition-colors cursor-pointer flex items-center gap-2 text-xs sm:text-sm font-bold z-10 uppercase tracking-widest">
+            <button ref={videoCloseRef} onClick={closeVideo} className="absolute -top-12 right-0 text-[#94A3B8] hover:text-[#39FF14] transition-colors cursor-pointer flex items-center gap-2 text-xs sm:text-sm font-bold z-10 uppercase tracking-widest">
               <X className="w-5 h-5 shrink-0" /> Close Video
             </button>
             <div className="relative pb-[56.25%] h-0 rounded-2xl overflow-hidden shadow-2xl border-2 border-[#39FF14] bg-black">
               <iframe
-                ref={iframeRef}
                 className="absolute top-0 left-0 w-full h-full"
                 src="https://www.youtube.com/embed/9pZOoS-1NHg?autoplay=1&rel=0&modestbranding=1"
-                title={`Setup ${FOCUS_KEYWORD} - Complete Installation Tutorial`}
+                title={`${FOCUS_KEYWORD} Setup - Complete Installation Tutorial`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen

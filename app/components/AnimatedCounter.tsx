@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useInView } from 'framer-motion';
+import { useHasMounted } from '@/hooks/use-has-mounted';
 
 export default function AnimatedCounter({ 
   value, 
@@ -17,13 +18,10 @@ export default function AnimatedCounter({
   duration?: number;
 }) {
   const [count, setCount] = useState(0);
-  const [mounted, setMounted] = useState(false);
+  // false during SSR/hydration (renders the final value), true on the client.
+  const mounted = useHasMounted();
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (isInView && mounted) {

@@ -1,10 +1,17 @@
-'use client';
-
+// Server Component: the footer has no interactivity (hover effects are CSS),
+// so it renders on the server. This keeps lib/channels-data.ts (used here only
+// for category slugs/names) out of the client JavaScript bundle.
 import Link from "next/link";
-import { useEffect, useId, useState } from "react";
+import { useId } from "react";
 import { CONSTANTS } from "@/lib/seo";
 import { channelsData } from "@/lib/channels-data";
 import { Facebook, Instagram, Twitter } from "lucide-react";
+
+const SOCIAL_LINKS = [
+  { href: CONSTANTS.SOCIALS.twitter, label: "Twitter", Icon: Twitter },
+  { href: CONSTANTS.SOCIALS.instagram, label: "Instagram", Icon: Instagram },
+  { href: CONSTANTS.SOCIALS.facebook, label: "Facebook", Icon: Facebook },
+].filter((s) => s.href);
 
 // ---------------------------------------------------------------------------
 // Lightweight Circular Flags (US, CA, UK, AU)
@@ -106,11 +113,8 @@ const legalLinks = [
 ];
 
 export default function Footer() {
-  const [year, setYear] = useState<number | null>(null);
-
-  useEffect(() => {
-    setYear(new Date().getFullYear());
-  }, []);
+  // Rendered on the server; static pages revalidate every 24h (root layout).
+  const year = new Date().getFullYear();
 
   return (
     <footer className="relative pt-16 border-t-4 border-[#39FF14] overflow-hidden">
@@ -187,38 +191,24 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Social Icons */}
-            <div className="flex items-center gap-3">
-              <a
-                href={CONSTANTS.SOCIALS.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Follow ${CONSTANTS.FOCUS_KEYWORD} on Twitter`}
-                className="group w-10 h-10 rounded-full bg-[#18181B] border border-[#27272A] flex items-center justify-center hover:bg-[#39FF14] hover:border-[#39FF14] transition-all duration-300 active:scale-95 cursor-pointer"
-              >
-                <Twitter className="w-4 h-4 text-[#94A3B8] group-hover:text-[#09090B] transition-colors" />
-              </a>
-
-              <a
-                href={CONSTANTS.SOCIALS.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Follow ${CONSTANTS.FOCUS_KEYWORD} on Instagram`}
-                className="group w-10 h-10 rounded-full bg-[#18181B] border border-[#27272A] flex items-center justify-center hover:bg-[#39FF14] hover:border-[#39FF14] transition-all duration-300 active:scale-95 cursor-pointer"
-              >
-                <Instagram className="w-4 h-4 text-[#94A3B8] group-hover:text-[#09090B] transition-colors" />
-              </a>
-
-              <a
-                href={CONSTANTS.SOCIALS.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Follow ${CONSTANTS.FOCUS_KEYWORD} on Facebook`}
-                className="group w-10 h-10 rounded-full bg-[#18181B] border border-[#27272A] flex items-center justify-center hover:bg-[#39FF14] hover:border-[#39FF14] transition-all duration-300 active:scale-95 cursor-pointer"
-              >
-                <Facebook className="w-4 h-4 text-[#94A3B8] group-hover:text-[#09090B] transition-colors" />
-              </a>
-            </div>
+            {/* Social Icons: rendered only for profiles the owner has set in
+                CONSTANTS.SOCIALS (empty = not yet confirmed, so no fake links). */}
+            {SOCIAL_LINKS.length > 0 && (
+              <div className="flex items-center gap-3">
+                {SOCIAL_LINKS.map(({ href, label, Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Follow ${CONSTANTS.FOCUS_KEYWORD} on ${label}`}
+                    className="group w-10 h-10 rounded-full bg-[#18181B] border border-[#27272A] flex items-center justify-center hover:bg-[#39FF14] hover:border-[#39FF14] transition-all duration-300 active:scale-95 cursor-pointer"
+                  >
+                    <Icon className="w-4 h-4 text-[#94A3B8] group-hover:text-[#09090B] transition-colors" />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Navigation Links */}
@@ -283,11 +273,13 @@ export default function Footer() {
       {/* ------------------------------------------------------------------- */}
       {/* BOTTOM FOOTER BAR                                                   */}
       {/* ------------------------------------------------------------------- */}
-      <div className="relative bg-[#121215] border-t border-[#27272A] py-6 px-6 lg:px-12 shadow-lg z-20">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
+      {/* Extra bottom space (mobile) / right space (md+) keeps the payment icons
+          clear of the fixed WhatsApp button, which otherwise covered them. */}
+      <div className="relative bg-[#121215] border-t border-[#27272A] pt-6 pb-28 md:pb-6 px-6 lg:px-12 shadow-lg z-20">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5 md:pr-20">
           {/* Copyright text */}
           <p className="text-base md:text-sm font-extrabold text-[#F8FAFC] tracking-wide text-center md:text-left">
-            © {year ?? new Date().getFullYear()}{" "}
+            © {year}{" "}
             <span className="text-[#39FF14]">{CONSTANTS.FOCUS_KEYWORD}</span>. All rights reserved.
           </p>
 

@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { blogPosts } from '@/lib/blog';
+import { blogPosts, type BlogPost } from '@/lib/blog';
+import { BLOG_CATEGORY_LABELS, blogImageProps, formatPostDate } from '@/lib/blog-helpers';
 import { CONSTANTS } from '@/lib/seo';
 import {
   ArrowRight,
@@ -9,7 +10,6 @@ import {
   Sparkles,
   Tag,
   MessageCircle,
-  Search,
   BookOpen,
   TrendingUp,
   ChevronLeft,
@@ -90,9 +90,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: `${SITE_URL}/img/structer.webp`,
-        width: 1200,
-        height: 630,
+        ...CONSTANTS.OG_IMAGE,
         alt: `${BRAND} Blog - Setup Guides and Streaming Tips`,
       },
     ],
@@ -101,7 +99,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: PAGE_TITLE,
     description: PAGE_DESCRIPTION,
-    images: [`${SITE_URL}/img/structer.webp`],
+    images: [CONSTANTS.OG_IMAGE.url],
   },
   category: 'entertainment',
   keywords: [
@@ -132,7 +130,7 @@ const CATEGORIES = [
   { id: 'news', label: 'News' },
 ];
 
-function getPostCategory(post: any): string {
+function getPostCategory(post: BlogPost): string {
   if (post.category) return post.category;
   const kw = (post.keywords || []).join(' ').toLowerCase();
   const title = (post.title || '').toLowerCase();
@@ -144,35 +142,17 @@ function getPostCategory(post: any): string {
 }
 
 function getCategoryLabel(id: string): string {
-  const map: Record<string, string> = {
-    setup: 'Setup Guide',
-    review: 'Review',
-    sports: 'Live Sports',
-    tips: 'Tips & Tricks',
-    news: 'News',
-  };
-  return map[id] || 'Guide';
+  return BLOG_CATEGORY_LABELS[id as keyof typeof BLOG_CATEGORY_LABELS] || 'Guide';
 }
 
-function getReadTime(post: any): string {
+// NOTE: this listing estimate (220 wpm, min 5, tags counted) differs from the
+// article page's estimate in lib/blog-helpers.ts (200 wpm, min 3). Kept as-is
+// to avoid changing displayed values; unify only as a deliberate content change.
+function getReadTime(post: BlogPost): string {
   if (post.readTime) return post.readTime;
   const words = (post.content || '').split(/\s+/).length;
   const mins = Math.max(5, Math.round(words / 220));
   return `${mins} min read`;
-}
-
-function formatDate(dateStr: string): string {
-  try {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
-    return d.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  } catch {
-    return dateStr;
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -265,11 +245,11 @@ const BlogSchema = () => {
 // ---------------------------------------------------------------------------
 // BLOG CARD COMPONENT
 // ---------------------------------------------------------------------------
-function BlogCard({ post, priority = false }: { post: any; priority?: boolean }) {
+function BlogCard({ post, priority = false }: { post: BlogPost; priority?: boolean }) {
   const categoryId = getPostCategory(post);
   const categoryLabel = getCategoryLabel(categoryId);
   const readTime = getReadTime(post);
-  const dateStr = formatDate(post.date);
+  const dateStr = formatPostDate(post.date);
 
   return (
     <Link
@@ -278,7 +258,7 @@ function BlogCard({ post, priority = false }: { post: any; priority?: boolean })
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-[#09090B]">
         <img
-          src={post.image}
+          {...blogImageProps(post.image, '(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 400px')}
           alt={`${post.title} - ${BRAND} blog`}
           width={800}
           height={500}
@@ -336,10 +316,10 @@ function BlogCard({ post, priority = false }: { post: any; priority?: boolean })
 // ---------------------------------------------------------------------------
 // FEATURED CARD COMPONENT
 // ---------------------------------------------------------------------------
-function FeaturedCard({ post }: { post: any }) {
+function FeaturedCard({ post }: { post: BlogPost }) {
   const categoryLabel = getCategoryLabel(getPostCategory(post));
   const readTime = getReadTime(post);
-  const dateStr = formatDate(post.date);
+  const dateStr = formatPostDate(post.date);
 
   return (
     <Link
@@ -348,7 +328,7 @@ function FeaturedCard({ post }: { post: any }) {
     >
       <div className="relative aspect-[16/10] lg:aspect-auto lg:min-h-[420px] overflow-hidden bg-[#09090B]">
         <img
-          src={post.image}
+          {...blogImageProps(post.image, '(max-width: 1024px) 100vw, 640px')}
           alt={`${post.title} - Featured ${BRAND} article`}
           width={900}
           height={600}

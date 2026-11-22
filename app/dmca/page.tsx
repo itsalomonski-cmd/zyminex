@@ -155,7 +155,7 @@ export default function DMCAPage() {
               1. Copyright Compliance
             </h2>
             <p className="text-[#94A3B8] text-base font-medium leading-relaxed">
-              {BRAND} ("we," "us," or "our") is committed to respecting the rights of copyright holders worldwide and strictly complying with the provisions of the Digital Millennium Copyright Act (DMCA) as well as applicable international intellectual property laws. We expect all of our users and partners to adhere to the same standards.
+              {BRAND} (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) is committed to respecting the rights of copyright holders worldwide and strictly complying with the provisions of the Digital Millennium Copyright Act (DMCA) as well as applicable international intellectual property laws. We expect all of our users and partners to adhere to the same standards.
             </p>
           </section>
 
@@ -282,7 +282,7 @@ export default function DMCAPage() {
         <div className="mt-16 pt-8 border-t border-[#27272A] text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest cursor-pointer"
+            className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest cursor-pointer py-2 -my-2"
           >
             ← Back to homepage
           </Link>

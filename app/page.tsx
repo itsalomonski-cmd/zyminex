@@ -1,8 +1,9 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { CONSTANTS } from '@/lib/seo';
 import { ProductSchema, FAQSchema } from './components/PageSchemas';
+import { FREE_TRIAL_WHATSAPP_URL } from '@/lib/seo';
 import { blogPosts } from '@/lib/blog';
+import { blogImageProps } from '@/lib/blog-helpers';
 import {
   PlayCircle,
   UserCheck,
@@ -42,6 +43,15 @@ import ShareButtons from './components/ShareButtons';
    Border         : #1E3A52 / #223E56
    Text           : #F8FAFC / #94A3B8
    ========================================================= */
+
+// Images inside `hidden lg:block` containers are still downloaded by browsers
+// when they are eager. Serving them through <picture> with this media query
+// means mobile only receives a 1x1 inline placeholder (never displayed, since
+// the container is display:none), while desktop gets the original file.
+// 64rem = Tailwind's `lg` breakpoint.
+const DESKTOP_ONLY_MEDIA = '(min-width: 64rem)';
+const HIDDEN_IMG_PLACEHOLDER =
+  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 const LoadingSpinner = () => (
   <div className="min-h-[600px] flex items-center justify-center">
@@ -114,14 +124,18 @@ export default function Home() {
         />
 
         <div className="hidden lg:block absolute bottom-0 right-0 w-[80%] h-[90%] z-[2] pointer-events-none">
-          <img
-            src="/img/neon.png"
-            alt=""
-            fetchPriority="high"
-            loading="eager"
-            className="absolute inset-0 w-full h-full object-cover object-bottom-right opacity-80"
-            aria-hidden="true"
-          />
+          {/* Desktop-only decorative art: the file is requested only at the lg
+              breakpoint (64rem), matching the container's `hidden lg:block`. */}
+          <picture>
+            <source media={DESKTOP_ONLY_MEDIA} srcSet="/img/neon.webp" />
+            <img
+              src={HIDDEN_IMG_PLACEHOLDER}
+              alt=""
+              loading="eager"
+              className="absolute inset-0 w-full h-full object-cover object-bottom-right opacity-80"
+              aria-hidden="true"
+            />
+          </picture>
         </div>
 
         <div className="absolute -top-20 left-1/3 -translate-x-1/2 w-[500px] h-[300px] bg-[#39FF14]/10 blur-[140px] rounded-full pointer-events-none z-[1]" />
@@ -151,12 +165,14 @@ export default function Home() {
               >
                 Buy Zyminex Now
               </Link>
-              <Link
-                href="/free-trial"
+              <a
+                href={FREE_TRIAL_WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-full sm:w-auto text-center whitespace-nowrap py-3.5 px-8 rounded-full bg-[#0B1F35]/70 text-[#F8FAFC] border border-[#39FF14]/40 font-black text-sm hover:bg-[#0F2942] transition-all hover:scale-105 uppercase tracking-wider flex items-center justify-center gap-2 shrink-0 backdrop-blur-md cursor-pointer"
               >
                 <PlayCircle className="w-5 h-5 text-[#39FF14] shrink-0" /> Start Free Trial
-              </Link>
+              </a>
             </div>
 
             <div className="flex flex-nowrap justify-center lg:justify-start gap-3 sm:gap-6 text-[10px] md:text-xs text-[#F8FAFC] font-bold uppercase tracking-widest w-full">
@@ -177,13 +193,18 @@ export default function Home() {
               <div className="w-[90%] h-[90%] bg-[#39FF14]/15 blur-[110px] rounded-full" />
             </div>
             <div className="relative w-full aspect-[4/3] lg:aspect-[5/4]">
-              <img
-                src="/img/hero.png"
-                alt="Zyminex streaming live US TV channels in 4K Ultra HD quality"
-                fetchPriority="high"
-                loading="eager"
-                className="absolute inset-0 w-full h-full object-contain scale-110"
-              />
+              {/* Desktop-only hero art (parent is `hidden lg:block`): keep high
+                  priority on desktop, but never download it on mobile. */}
+              <picture>
+                <source media={DESKTOP_ONLY_MEDIA} srcSet="/img/hero.webp" />
+                <img
+                  src={HIDDEN_IMG_PLACEHOLDER}
+                  alt="Zyminex streaming live US TV channels in 4K Ultra HD quality"
+                  fetchPriority="high"
+                  loading="eager"
+                  className="absolute inset-0 w-full h-full object-contain scale-110"
+                />
+              </picture>
             </div>
           </div>
         </FadeIn>
@@ -247,7 +268,7 @@ export default function Home() {
                 </h3>
 
                 <p className="text-[#94A3B8] text-sm font-medium leading-relaxed mb-6">
-                  Pick the Zyminex Subscription that fits your household. Choose 1, 2, or 3 simultaneous screens and lock in a 3, 6, or 12-month term. Plans are available in USD with no hidden fees, no surprise charges, and no contract you can't cancel.
+                  Pick the Zyminex Subscription that fits your household. Choose 1, 2, or 3 simultaneous screens and lock in a 3, 6, or 12-month term. Plans are available in USD with no hidden fees, no surprise charges, and no contract you can&apos;t cancel.
                 </p>
 
                 <ul className="text-xs font-bold text-[#94A3B8] space-y-2.5 mb-8">
@@ -293,7 +314,7 @@ export default function Home() {
                 </h3>
 
                 <p className="text-[#94A3B8] text-sm font-medium leading-relaxed mb-6">
-                  Your M3U playlist and Xtream Codes login land in your inbox shortly after checkout. Fire up a player like IPTV Extreme Pro, TiviMate, or Smart IPTV, paste your credentials, and you're live. Works on Firestick, Android TV, Apple TV, Smart TVs, phones, and desktop.
+                  Your M3U playlist and Xtream Codes login land in your inbox shortly after checkout. Fire up a player like IPTV Extreme Pro, TiviMate, or Smart IPTV, paste your credentials, and you&apos;re live. Works on Firestick, Android TV, Apple TV, Smart TVs, phones, and desktop.
                 </p>
 
                 <ul className="text-xs font-bold text-[#94A3B8] space-y-2.5 mb-8">
@@ -381,7 +402,7 @@ export default function Home() {
               LIVE CHANNELS FOR EVERY US VIEWER
             </h2>
             <p className="text-[#94A3B8] font-medium text-lg">
-              Every major American network — ESPN, Fox, NBC, CBS, ABC, HBO, Showtime, and Starz — plus thousands of international feeds from Europe, Asia, and the Middle East. New titles drop daily across our on-demand library. It's the IPTV Provider lineup built for American viewers, and it's all in one place.
+              Every major American network — ESPN, Fox, NBC, CBS, ABC, HBO, Showtime, and Starz — plus thousands of international feeds from Europe, Asia, and the Middle East. New titles drop daily across our on-demand library. It&apos;s the IPTV Provider lineup built for American viewers, and it&apos;s all in one place.
             </p>
           </div>
         </FadeIn>
@@ -493,7 +514,7 @@ export default function Home() {
 
         <div className="w-full max-w-3xl px-4 text-center mt-10">
           <p className="text-base md:text-lg leading-relaxed text-[#94A3B8] font-medium">
-            Nothing beats match day on the big screen — whether it's NFL Sunday, NBA tip-off, or a UFC championship card. Zyminex runs on dedicated edge servers across the United States, keeping the picture razor-sharp and the sound locked in sync. Settle into the couch and skip the buffering for good.
+            Nothing beats match day on the big screen — whether it&apos;s NFL Sunday, NBA tip-off, or a UFC championship card. Zyminex runs on dedicated edge servers across the United States, keeping the picture razor-sharp and the sound locked in sync. Settle into the couch and skip the buffering for good.
           </p>
           <div className="w-full flex justify-center mt-8">
             <Link
@@ -585,7 +606,7 @@ export default function Home() {
               WHY ZYMINEX IS A <span className="text-[#39FF14]">PREMIER IPTV PROVIDER</span> IN THE US
             </h2>
             <p className="text-[#94A3B8] font-semibold text-lg max-w-3xl mx-auto leading-relaxed">
-              Households across the country are done overpaying for cable. Here is why so many are switching to Zyminex — and why we're rated a premier IPTV Provider in the United States.
+              Households across the country are done overpaying for cable. Here is why so many are switching to Zyminex — and why we&apos;re rated a premier IPTV Provider in the United States.
             </p>
           </FadeIn>
 
@@ -867,7 +888,7 @@ export default function Home() {
               </h3>
 
               <p className="text-base leading-relaxed text-[#94A3B8] font-medium">
-                When you connect to Zyminex's US servers, you tap into a network built for stability. We route your traffic through high-bandwidth nodes across the United States that cut down on buffering and keep 4K, Full HD, and HD streams looking their best — all at a stable 60FPS.
+                When you connect to Zyminex&apos;s US servers, you tap into a network built for stability. We route your traffic through high-bandwidth nodes across the United States that cut down on buffering and keep 4K, Full HD, and HD streams looking their best — all at a stable 60FPS.
               </p>
 
               <p className="mt-4 text-sm leading-relaxed text-[#94A3B8] font-medium">
@@ -1118,7 +1139,7 @@ export default function Home() {
               TRUSTED BY <span className="text-[#39FF14]">SUBSCRIBERS NATIONWIDE</span>
             </h2>
             <p className="text-[#94A3B8] text-lg font-medium max-w-2xl mx-auto">
-              What real subscribers say about Zyminex (and why they're not going back to cable).
+              What real subscribers say about Zyminex (and why they&apos;re not going back to cable).
             </p>
           </FadeIn>
 
@@ -1155,6 +1176,7 @@ export default function Home() {
                         alt={testimonial.name}
                         width={48}
                         height={48}
+                        loading="lazy"
                         className="w-12 h-12 rounded-2xl object-cover border-2 border-[#1E3A52] shadow-md shrink-0"
                       />
                       <div>
@@ -1349,13 +1371,12 @@ export default function Home() {
                     <div>
                       <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-[#081425]">
                         <img
-                          src={post.image}
-                          alt={`${post.title} Zyminex setup guide`}
+                          {...blogImageProps(post.image, '(max-width: 768px) 100vw, 33vw')}
+                          alt={post.title}
                           width={800}
                           height={450}
                           loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                          sizes="(max-width: 768px) 100vw, 33vw"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#081425]/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
 
@@ -1427,7 +1448,7 @@ export default function Home() {
               </h2>
 
               <p className="mx-auto mt-4 max-w-3xl text-sm sm:text-base md:text-lg font-medium leading-relaxed text-[#94A3B8]">
-                Pick your plan, get instant credentials by email, and start streaming on your own device. Test everything on the free trial first — upgrade to a paid Zyminex Subscription only when you're ready. No contract. No hassle. No surprises.
+                Pick your plan, get instant credentials by email, and start streaming on your own device. Test everything on the free trial first — upgrade to a paid Zyminex Subscription only when you&apos;re ready. No contract. No hassle. No surprises.
               </p>
 
               <div className="mx-auto mt-10 grid max-w-4xl grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
@@ -1457,7 +1478,7 @@ export default function Home() {
                   Choose Your Plan
                 </Link>
                 <Link
-                  href="/firestick-setup"
+                  href="/setup"
                   className="w-full sm:w-auto text-center whitespace-nowrap inline-flex items-center justify-center gap-2 rounded-2xl border border-[#39FF14]/40 bg-[#0F2942] px-8 py-4 text-xs sm:text-sm font-black uppercase tracking-widest text-[#F8FAFC] hover:bg-[#081425] transition-all hover:scale-105 shrink-0 shadow-sm"
                 >
                   <Settings className="h-4 w-4 text-[#39FF14] shrink-0" /> Firestick Setup Guide

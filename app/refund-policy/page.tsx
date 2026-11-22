@@ -5,13 +5,11 @@ import {
   ShieldCheck,
   CheckCircle,
   AlertCircle,
-  Clock,
   Mail,
   MessageSquare,
   Wrench,
   Wifi,
   FileCheck,
-  ArrowRight,
 } from 'lucide-react';
 
 const SITE_URL = CONSTANTS.SITE_URL;
@@ -52,36 +50,8 @@ const RefundSchema = () => {
           { '@type': 'ListItem', position: 2, name: 'Refund Policy', item: PAGE_URL },
         ],
       },
-      {
-        '@type': 'FAQPage',
-        '@id': `${PAGE_URL}/#faq`,
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: `How does the ${BRAND} 7 day quality guarantee work?`,
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: `If you experience a verified technical problem in our server infrastructure within 7 calendar days of purchase, and our 24/7 support team cannot fix it within 24 hours, we will refund your full purchase amount. The guarantee applies to genuine service problems, not change of mind requests.`,
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'What situations are NOT covered by the refund policy?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'Refunds are not available for change of mind, personal preference, local Wi-Fi or internet issues under 25 Mbps, device incompatibility with outdated firmware, individual channel changes, or Fair Use policy violations such as streaming on more devices than purchased.',
-            },
-          },
-          {
-            '@type': 'Question',
-            name: 'How long does a refund take to process?',
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: 'After technical authorization is confirmed, refunds are processed within 1 to 3 business days back to the original payment method: Credit Card, PayPal, Crypto, or Apple/Google Pay.',
-            },
-          },
-        ],
-      },
+      // No FAQPage here: this page is a policy document without a visible
+      // question-and-answer section, and FAQ markup must match visible content.
     ],
   };
 
@@ -252,7 +222,7 @@ export default function RefundPolicyPage() {
               <div className="p-5 rounded-2xl bg-[#18181B] border border-[#27272A] text-center flex flex-col justify-between hover:border-[#39FF14] transition-colors">
                 <div>
                   <Wrench className="w-6 h-6 text-[#39FF14] mx-auto mb-2" />
-                  <h4 className="font-bold text-sm text-[#F8FAFC] mb-1">1. Line Verification</h4>
+                  <h3 className="font-bold text-sm text-[#F8FAFC] mb-1">1. Line Verification</h3>
                   <p className="text-xs text-[#94A3B8] font-medium">
                     We verify your account token on our active server ports.
                   </p>
@@ -261,7 +231,7 @@ export default function RefundPolicyPage() {
               <div className="p-5 rounded-2xl bg-[#18181B] border border-[#27272A] text-center flex flex-col justify-between hover:border-[#39FF14] transition-colors">
                 <div>
                   <Wifi className="w-6 h-6 text-[#39FF14] mx-auto mb-2" />
-                  <h4 className="font-bold text-sm text-[#F8FAFC] mb-1">2. Server Reset</h4>
+                  <h3 className="font-bold text-sm text-[#F8FAFC] mb-1">2. Server Reset</h3>
                   <p className="text-xs text-[#94A3B8] font-medium">
                     We reroute your streaming profile to an alternate global edge node.
                   </p>
@@ -270,7 +240,7 @@ export default function RefundPolicyPage() {
               <div className="p-5 rounded-2xl bg-[#18181B] border border-[#27272A] text-center flex flex-col justify-between hover:border-[#39FF14] transition-colors">
                 <div>
                   <FileCheck className="w-6 h-6 text-[#39FF14] mx-auto mb-2" />
-                  <h4 className="font-bold text-sm text-[#F8FAFC] mb-1">3. Release</h4>
+                  <h3 className="font-bold text-sm text-[#F8FAFC] mb-1">3. Release</h3>
                   <p className="text-xs text-[#94A3B8] font-medium">
                     If the outage remains unresolvable, immediate refund approval follows.
                   </p>
@@ -371,7 +341,7 @@ export default function RefundPolicyPage() {
         <div className="mt-16 pt-8 border-t border-[#27272A] text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest cursor-pointer"
+            className="inline-flex items-center gap-2 text-[#39FF14] hover:text-[#F8FAFC] transition-colors font-black text-xs uppercase tracking-widest cursor-pointer py-2 -my-2"
           >
             ← Back to homepage
           </Link>
