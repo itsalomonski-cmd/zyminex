@@ -1,7 +1,8 @@
+import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { ProductSchema, FAQSchema } from './components/PageSchemas';
-import { FREE_TRIAL_WHATSAPP_URL } from '@/lib/seo';
+import { CONSTANTS, FREE_TRIAL_WHATSAPP_URL } from '@/lib/seo';
 import { blogPosts } from '@/lib/blog';
 import { blogImageProps } from '@/lib/blog-helpers';
 import {
@@ -50,6 +51,21 @@ import ShareButtons from './components/ShareButtons';
 // the container is display:none), while desktop gets the original file.
 // 64rem = Tailwind's `lg` breakpoint.
 const DESKTOP_ONLY_MEDIA = '(min-width: 64rem)';
+
+// The root layout's relative canonical ('./') resolves to
+// "https://zyminex.plus/index" for the homepage in production builds, so the
+// homepage declares its absolute URL explicitly (matching og:url and the
+// sitemap). Everything else (title, description, Open Graph, Twitter) is
+// still inherited from the root layout.
+export const metadata: Metadata = {
+  alternates: {
+    canonical: CONSTANTS.SITE_URL,
+    languages: {
+      'en-US': CONSTANTS.SITE_URL,
+      'x-default': CONSTANTS.SITE_URL,
+    },
+  },
+};
 const HIDDEN_IMG_PLACEHOLDER =
   'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 

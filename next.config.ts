@@ -27,6 +27,11 @@ const nextConfig: NextConfig = {
     ],
   },
   output: 'standalone',
+  // Next.js also serves the homepage at "/index"; send it to the one real
+  // homepage URL so it cannot be crawled or shared as a duplicate.
+  async redirects() {
+    return [{ source: '/index', destination: '/', permanent: true }];
+  },
   webpack: (config, {dev}) => {
     // HMR is disabled in AI Studio via DISABLE_HMR env var.
     // Do not modify—file watching is disabled to prevent flickering during agent edits.

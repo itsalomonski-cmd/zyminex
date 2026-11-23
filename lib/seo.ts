@@ -32,7 +32,7 @@ const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 // the existing logo; the previous square /img/og-image.png (1254x1254) is kept
 // in /public unchanged.
 const OG_IMAGE = {
-  url: `${SITE_URL}/img/og-image-1200x630.jpg`,
+  url: `${SITE_URL}/img/og-image.jpg`,
   width: 1200,
   height: 630,
   type: 'image/jpeg',
