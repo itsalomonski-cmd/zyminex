@@ -206,7 +206,8 @@ const OrganizationSchema = () => (
       __html: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'Organization',
-        '@id': `${SITE_URL}/#organization`,
+        // Same @id the Product offers reference as their seller.
+        '@id': CONSTANTS.ORGANIZATION_ID,
         name: CONSTANTS.BRAND_NAME,
         alternateName: `${CONSTANTS.BRAND_NAME} Streaming`,
         url: SITE_URL,
@@ -237,6 +238,16 @@ const OrganizationSchema = () => (
           contactType: 'customer service',
           availableLanguage: ['English'],
           areaServed: ['US'],
+        },
+        // Store-wide return policy, given only as a link to the published page
+        // (no returnPolicyCategory or merchantReturnDays). The policy refunds
+        // only a verified server-side failure reported in writing within 7 days
+        // of purchase, after support has had 24 hours to fix it, and never for
+        // a change of mind: a 7-day return window would promise more than
+        // that, and "returns not permitted" would hide the guarantee.
+        hasMerchantReturnPolicy: {
+          '@type': 'MerchantReturnPolicy',
+          merchantReturnLink: `${SITE_URL}/refund-policy`,
         },
         // sameAs omitted: CONSTANTS.SOCIALS are still marked "Replace" in
         // lib/seo.ts. sameAs asserts those profiles ARE this organization, so

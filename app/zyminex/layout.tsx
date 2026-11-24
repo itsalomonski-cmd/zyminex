@@ -93,6 +93,12 @@ export const metadata: Metadata = {
 const IptvPageSchema = () => {
   const currentDate = new Date().toISOString().split('T')[0];
 
+  // The return policy is declared once on the Organization (app/layout.tsx,
+  // a link to /refund-policy); each offer names that Organization as seller.
+  // shippingDetails is intentionally absent: nothing is shipped (digital
+  // subscription), so any shipping rate, destination or time would be invented.
+  const offerSeller = { seller: { '@id': CONSTANTS.ORGANIZATION_ID } };
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -135,6 +141,7 @@ const IptvPageSchema = () => {
             validFrom: currentDate,
             availability: 'https://schema.org/InStock',
             url: `${SITE_URL}/pricing`,
+            ...offerSeller,
             description: `${BRAND} 3 month plan on 1 device with 55,000+ live channels.`,
           },
           {
@@ -146,6 +153,7 @@ const IptvPageSchema = () => {
             validFrom: currentDate,
             availability: 'https://schema.org/InStock',
             url: `${SITE_URL}/pricing`,
+            ...offerSeller,
             description: `${BRAND} 6 month plan on 1 device with 55,000+ live channels.`,
           },
           {
@@ -157,6 +165,7 @@ const IptvPageSchema = () => {
             validFrom: currentDate,
             availability: 'https://schema.org/InStock',
             url: `${SITE_URL}/pricing`,
+            ...offerSeller,
             description: `${BRAND} 12 month plan on 1 device with 55,000+ live channels.`,
           },
 
@@ -170,6 +179,7 @@ const IptvPageSchema = () => {
             validFrom: currentDate,
             availability: 'https://schema.org/InStock',
             url: `${SITE_URL}/pricing`,
+            ...offerSeller,
             description: `${BRAND} 3 month plan on 2 devices with 55,000+ live channels.`,
           },
           {
@@ -181,6 +191,7 @@ const IptvPageSchema = () => {
             validFrom: currentDate,
             availability: 'https://schema.org/InStock',
             url: `${SITE_URL}/pricing`,
+            ...offerSeller,
             description: `${BRAND} 6 month plan on 2 devices with 55,000+ live channels.`,
           },
           {
@@ -192,6 +203,7 @@ const IptvPageSchema = () => {
             validFrom: currentDate,
             availability: 'https://schema.org/InStock',
             url: `${SITE_URL}/pricing`,
+            ...offerSeller,
             description: `${BRAND} 12 month plan on 2 devices with 55,000+ live channels.`,
           },
 
@@ -205,6 +217,7 @@ const IptvPageSchema = () => {
             validFrom: currentDate,
             availability: 'https://schema.org/InStock',
             url: `${SITE_URL}/pricing`,
+            ...offerSeller,
             description: `${BRAND} 3 month plan on 3 devices with 55,000+ live channels.`,
           },
           {
@@ -216,6 +229,7 @@ const IptvPageSchema = () => {
             validFrom: currentDate,
             availability: 'https://schema.org/InStock',
             url: `${SITE_URL}/pricing`,
+            ...offerSeller,
             description: `${BRAND} 6 month plan on 3 devices with 55,000+ live channels.`,
           },
           {
@@ -227,6 +241,7 @@ const IptvPageSchema = () => {
             validFrom: currentDate,
             availability: 'https://schema.org/InStock',
             url: `${SITE_URL}/pricing`,
+            ...offerSeller,
             description: `${BRAND} 12 month plan on 3 devices with 55,000+ live channels.`,
           },
         ],

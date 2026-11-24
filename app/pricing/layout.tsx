@@ -110,11 +110,11 @@ export const metadata: Metadata = {
 const PricingPageSchema = () => {
   const currentDate = new Date().toISOString().split('T')[0];
 
-  // Shipping and return-policy markup intentionally omitted: shipping does not
-  // apply to a digital subscription, and "MerchantReturnNotPermitted"
-  // contradicted the published Terms (7-day refund). Add a MerchantReturnPolicy
-  // here only once the owner confirms the actual refund policy.
-  const digitalDeliveryDetails = {};
+  // The return policy is declared once on the Organization (app/layout.tsx,
+  // a link to /refund-policy); each offer names that Organization as seller.
+  // shippingDetails is intentionally absent: nothing is shipped (digital
+  // subscription), so any shipping rate, destination or time would be invented.
+  const offerSeller = { seller: { '@id': CONSTANTS.ORGANIZATION_ID } };
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -146,7 +146,7 @@ const PricingPageSchema = () => {
             availability: 'https://schema.org/InStock',
             url: PAGE_URL,
             description: `3 month ${BRAND} subscription on 1 device with 55,000+ live channels and 150,000+ movies and TV shows.`,
-            ...digitalDeliveryDetails,
+            ...offerSeller,
           },
           {
             '@type': 'Offer',
@@ -158,7 +158,7 @@ const PricingPageSchema = () => {
             availability: 'https://schema.org/InStock',
             url: PAGE_URL,
             description: `6 month ${BRAND} subscription on 1 device with 55,000+ live channels and 150,000+ movies and TV shows.`,
-            ...digitalDeliveryDetails,
+            ...offerSeller,
           },
           {
             '@type': 'Offer',
@@ -170,7 +170,7 @@ const PricingPageSchema = () => {
             availability: 'https://schema.org/InStock',
             url: PAGE_URL,
             description: `12 month ${BRAND} subscription on 1 device with 55,000+ live channels and 150,000+ movies and TV shows.`,
-            ...digitalDeliveryDetails,
+            ...offerSeller,
           },
 
           // ---- 2 Screens ----
@@ -184,7 +184,7 @@ const PricingPageSchema = () => {
             availability: 'https://schema.org/InStock',
             url: PAGE_URL,
             description: `3 month ${BRAND} subscription on 2 devices with 55,000+ live channels and 150,000+ movies and TV shows.`,
-            ...digitalDeliveryDetails,
+            ...offerSeller,
           },
           {
             '@type': 'Offer',
@@ -196,7 +196,7 @@ const PricingPageSchema = () => {
             availability: 'https://schema.org/InStock',
             url: PAGE_URL,
             description: `6 month ${BRAND} subscription on 2 devices with 55,000+ live channels and 150,000+ movies and TV shows.`,
-            ...digitalDeliveryDetails,
+            ...offerSeller,
           },
           {
             '@type': 'Offer',
@@ -208,7 +208,7 @@ const PricingPageSchema = () => {
             availability: 'https://schema.org/InStock',
             url: PAGE_URL,
             description: `12 month ${BRAND} subscription on 2 devices with 55,000+ live channels and 150,000+ movies and TV shows.`,
-            ...digitalDeliveryDetails,
+            ...offerSeller,
           },
 
           // ---- 3 Screens ----
@@ -222,7 +222,7 @@ const PricingPageSchema = () => {
             availability: 'https://schema.org/InStock',
             url: PAGE_URL,
             description: `3 month ${BRAND} subscription on 3 devices with 55,000+ live channels and 150,000+ movies and TV shows.`,
-            ...digitalDeliveryDetails,
+            ...offerSeller,
           },
           {
             '@type': 'Offer',
@@ -234,7 +234,7 @@ const PricingPageSchema = () => {
             availability: 'https://schema.org/InStock',
             url: PAGE_URL,
             description: `6 month ${BRAND} subscription on 3 devices with 55,000+ live channels and 150,000+ movies and TV shows.`,
-            ...digitalDeliveryDetails,
+            ...offerSeller,
           },
           {
             '@type': 'Offer',
@@ -246,7 +246,7 @@ const PricingPageSchema = () => {
             availability: 'https://schema.org/InStock',
             url: PAGE_URL,
             description: `12 month ${BRAND} subscription on 3 devices with 55,000+ live channels and 150,000+ movies and TV shows.`,
-            ...digitalDeliveryDetails,
+            ...offerSeller,
           },
         ],
       },

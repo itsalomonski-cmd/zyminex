@@ -13,12 +13,13 @@ const SITE_URL = CONSTANTS.SITE_URL;
 // Uses canonical pricing matrix (1/2/3 devices × 3/6/12 months)
 // ---------------------------------------------------------------------------
 export function ProductSchema() {
-  // Return-policy and shipping markup was removed: "MerchantReturnNotPermitted"
-  // contradicted the published Terms (7-day refund) and shipping details do not
-  // apply to a digital subscription. Re-add a MerchantReturnPolicy only once the
-  // owner confirms the actual refund policy.
+  // The return policy is declared once on the Organization (app/layout.tsx,
+  // a link to /refund-policy); each offer names that Organization as seller.
+  // shippingDetails is intentionally absent: nothing is shipped (digital
+  // subscription), so any shipping rate, destination or time would be invented.
   const commonOfferDefaults = {
     validFrom: '2025-01-01',
+    seller: { '@id': CONSTANTS.ORGANIZATION_ID },
   };
 
   const productSchema = {
